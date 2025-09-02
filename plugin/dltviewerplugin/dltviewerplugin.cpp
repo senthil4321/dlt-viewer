@@ -120,7 +120,7 @@ void DltViewerPlugin::selectedIdxMsg(int index, QDltMsg &msg) {
     else {
         text += QString("<h3>Payload</h3>");
         text += QString("<table border=\"1\" cellspacing=\"0\" cellheader=\"0\">");
-        text += QString("<tr><th>Index</th><th>Offest</th><th>Size</th><th>TypeInfo</th><th>Name</th><th>Unit</th><th>Text</th><th>Binary</th></tr>");
+        text += QString("<tr><th>Index</th><th>Offset</th><th>Size</th><th>TypeInfo</th><th>Name</th><th>Unit</th><th>Text</th><th>Binary</th></tr>");
         for(int num=0;num<msg.getNumberOfArguments();num++) {
             text += QString("<tr>");
             if(msg.getArgument(num,argument)) {
@@ -252,7 +252,7 @@ void DltViewerPlugin::selectedIdxMsg(int index, QDltMsg &msg) {
         }
         text += QString("<h4>Payload</h4>");
         text += QString("<table border=\"1\" cellspacing=\"0\" cellheader=\"0\">");
-        text += QString("<tr><th>Index</th><th>Offest</th><th>Size</th><th>TypeInfo</th><th>Name</th><th>Unit</th><th>Text</th><th>Binary</th></tr>");
+        text += QString("<tr><th>Index</th><th>Offset</th><th>Size</th><th>TypeInfo</th><th>Name</th><th>Unit</th><th>Text</th><th>Binary</th></tr>");
         for(int num=0;num<msg.getNumberOfArguments();num++) {
             text += QString("<tr>");
             if(msg.getArgument(num,argument)) {

@@ -259,5 +259,5 @@ cmake --build . --target dltsomeipplugin -v
 # Microsoft Visual Studio 2019
 - Development with Visual Studio is also supported by current CMake configuration starting from version VS 2019.
 - There is **no need** to use CMake generator: [Visual Studio generator](https://cmake.org/cmake/help/latest/manual/cmake-generators.7.html#visual-studio-generators) and generate `.sln` and `.vcproj` files anymore. NO need to use `msbuild` and `nmake`. CMake and Ninja are fully supported by VS 2019.
-- `dlt-viewer` folder should be open with command Open Directory and **not** wth Open Solution or Open Project.
+- `dlt-viewer` folder should be open with command Open Directory and **not** with Open Solution or Open Project.
 - One reason to use Visual Studio could be a great built-in *C++ Profiler*. https://docs.microsoft.com/en-us/visualstudio/profiling/profiling-feature-tour?view=vs-2022

@@ -134,9 +134,9 @@ void QDltImporter::dltIpcFromPCAP(QString fileName)
 
     qDebug() << "fromPCAP: Counter Records:" << counterRecords;
     qDebug() << "fromPCAP: Counter Records DLT:" << counterRecordsDLT;
-    qDebug() << "fromPCAP: Counter DLT Mesages:" << counterDLTMessages;
+    qDebug() << "fromPCAP: Counter DLT Messages:" << counterDLTMessages;
     qDebug() << "fromPCAP: Counter Records IPC:" << counterRecordsIPC;
-    qDebug() << "fromPCAP: Counter IPC Mesages:" << counterIPCMessages;
+    qDebug() << "fromPCAP: Counter IPC Messages:" << counterIPCMessages;
 
     qDebug() << "fromPCAP: Import finished";
 }
@@ -1055,7 +1055,7 @@ bool QDltImporter::dltFrame(QByteArray &record,int pos,quint32 sec,quint32 usec)
     quint64 dataSize;
     dataSize = record.size()-pos;
     char* dataPtr = record.data()+pos;
-    // Find one ore more DLT messages in the UDP message
+    // Find one or mor DLT messages in the UDP message
     while(dataSize>0)
     {
         QDltMsg qmsg;
