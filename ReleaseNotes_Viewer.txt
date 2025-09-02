@@ -774,7 +774,7 @@ Fixes:
     * Renamed OptManager into QDltOptManager.
     * Moved QDltSettingsManager to qdlt library.
     * Renamed DltSettingsManager into QDltSettingsManager.
-    * Seperated settings from UI.
+    * Separated settings from UI.
     * Moved local read/write routine to QDltSettingsManager.
     * Updated cmake files.
 
@@ -804,13 +804,13 @@ Fixes:
     * fix speedplugin example, needed due to plugin interface extension
     * add qdltmessagedecoder to cmake to fix build issue
     * fix exec name in dlt_viewer.desktop file
-    * Bugfix: sporadic segfault in commandline convertion mode
+    * Bugfix: sporadic segfault in commandline conversion mode
 
 
 
 2.19.0
     * Adjust to cmake changes
-    * QTextStream wants an IO target. Fixes a crash when a plugin failes to load
+    * QTextStream wants an IO target. Fixes a crash when a plugin fails to load
     * Changed ambiguous wording in documentation for CMake builds (#44)
     * Fixed corrupt message received when the DLT frame starting sequence is detected in the payload.
     * Fix the manual trigger for all ECUs
@@ -868,7 +868,7 @@ Fixes:
     * Revert Append QTDIR to CMAKE_PREFIX_PATH
     * Correlate menu + checkbox for "enable plugin"
     * Rework README.md
-    * project.cpp: Error mesage with line number in case of corrupt project file
+    * project.cpp: Error message with line number in case of corrupt project file
     * Bugfix: System proxy settings not correct handled in QT5.8
     * Index column with 1000 separator
     * avoid nasty commandline message on start
@@ -879,9 +879,9 @@ Fixes:
     * Rename on_SaveAs_triggered
     * Rename slot on_action_menuConfig_SearchTable_Copy_to_clipboard_triggered
     * Rename slot on_New_triggered
-    * Remove obslete qextserialport
+    * Remove obsolete qextserialport
     * Port from qextserialport to QSerialPort
-    * Fix huge window problem whith long filenames
+    * Fix huge window problem with long filenames
     * Append QTDIR to CMAKE_PREFIX_PATH
     * Add CMake build support under windows
     * Improved the performance of the copy selection to clipboard from the search table.
@@ -897,7 +897,7 @@ Fixes:
     * fix warnings of gcc 7.2
     * add silent mode to dltexporter
     * Add silent mode in dltfileutils
-    * propper type assignment for bool variables in project.h/cpp
+    * proper type assignment for bool variables in project.h/cpp
     * [searchdialog] keep the cursor position when search-text is edited in the middle
     * bugfix of temp file path settings
     * add debug output in case of corrupt filter file
@@ -912,9 +912,9 @@ Fixes:
     * Add decoded dlt commandline export
     * Remove unused function on_actionApply_Configuration_triggered
     * Fixed condsidering plugins enabled flag in index cache.
-    * Replace magic number for autoconnect default timer by a proper define Also consider plugin enabled checkbox when live tracing More meaningfull commandline output
+    * Replace magic number for autoconnect default timer by a proper define Also consider plugin enabled checkbox when live tracing More meaningful commandline output
     * Fixed not considering plugin configuration when loading index from cache.
-    * Check if plugins are enabled during file indexing Enable "Apply Configuration" button by default Change "Aplly configuration" button from PluseButton to Pushbutton Default setting of index cache set to inactive
+    * Check if plugins are enabled during file indexing Enable "Apply Configuration" button by default Change "Apply configuration" button from PluseButton to Pushbutton Default setting of index cache set to inactive
     * Start ColorDialog with current color instead of white
     * tablemodel: fix deprecated Qt class
     * Add dlt file conversion format csv to commandline mode
@@ -1043,7 +1043,7 @@ Fixes:
   * Filter (separate regex settings and ignorecase) and Filterdialog redesign replaced icons with open icon library, corrected tooltips
   * Allow to show Payload as multiple Argument columns, default set to 0 argument columns
   * Added ActionToggleButtons to Main toolbar to Control Plugins/Filters/SortByTime Enabled checkboxes. Replaced icons with open icon library, changed action button 
-    syncronisation
+    synchronisation
 
 2.13.0
   * Updated qt to version 5.4.0
@@ -1081,7 +1081,7 @@ Fixes:
 
 2.12.0
   * Fixed positive filter with marker not saved correctly
-  * Fixed wrongly displayed negative values in big endianess
+  * Fixed wrongly displayed negative values in big endianness
   * Format of Hex and Bit fields in DLT Viewer.
   * Plugin interface for connect and disconnect
   * Multi configuration file load in non-verbose plugin
@@ -1182,7 +1182,7 @@ Fixes:
   * Added description of not yet implemented FLIF in file transfer plugin.
   * Move maintoolbar creation to designer. Separate main and search toolbar.
   * Added description for commandline based extraction of File Transfers.
-  * Added QT5 Combatibility
+  * Added QT5 Compatibility
   * Add build scripts for QT5, MSVC compilers.
   * Split up constructor in sub-functions to get better overview.
   * Search to List implemented.
@@ -1320,8 +1320,8 @@ Fixes:
    * [GSW-134] Expand and collapse all context menu in the configWidget (shortcut ctrl+- and ctrl++)
    * [GSW-112] Possibility to enable/disable filters with a check-box in the filter widget
    * [GSW-111] Checkbox in project settings for automatically color errors and wanrings in the viewer
-   * [GSW-131] The viewer looks in relativ to the executable in the ./plugins directory
-   * [GSW-129] Double klick on .dlt or .dlp opens dlt_viewer and loads automatically logfile or projectfile when dlt_viewer is defined as the standard program for .dlt or .dlp files in Windows
+   * [GSW-131] The viewer looks in relative to the executable in the ./plugins directory
+   * [GSW-129] Double click on .dlt or .dlp opens dlt_viewer and loads automatically logfile or projectfile when dlt_viewer is defined as the standard program for .dlt or .dlp files in Windows
    * Plugininformation is called when the Pluginitem is expanded and not only when the Plugin is loaded
    * [GSW-107] Check if the plugins are really deactivated when they are hidden
    * [GENDLT-11] Wrong HTML format for < and > of the viewer plugin
@@ -1338,7 +1338,7 @@ Fixes:
    * [GSW-70] Button for save project in the toolbar
    * Fixed Bug in Filetransferplugin - Clear list button
    * Fixed initialisation of injection plugin interface.
-   * [GSW-109] Printing of dlt-viewer usage not visibile in windows. Command line usage for windows added to the help menu of the dlt viewer.
+   * [GSW-109] Printing of dlt-viewer usage not visible in windows. Command line usage for windows added to the help menu of the dlt viewer.
    * [GSW-104] Overload operator< for detailed sorting of appIds and ctIds in the configWidget of the viewer
    * [GSW-102] The dlt viewer plugin snips a part of the payload if < is in the payload
 
@@ -1378,8 +1378,8 @@ Fixes:
    * Fixed crash when double clicking on child item below plugin item.
    * All directory and file search dialog now use the same working directory.
    * [GSW-35] Filtered messages have other message ids then unfiltered messages fixed.
-   * Fixed Endianess failures of non verbose plugin.
-   * [GSW-30] Byte order of payload is not diplayed correctly fixed.
+   * Fixed Endianness failures of non verbose plugin.
+   * [GSW-30] Byte order of payload is not displayed correctly fixed.
    * [GSW-24] Timestamp in ASCII Export is not correctly displayed fixed.
    * [GSW-22] Plugin Non Verbose: Zero arguments displays "[Id]|" fixed.
 
@@ -1396,10 +1396,10 @@ Fixes:
    * Append DLT file functionality added
    * Start DLT viewer with a DLT Viewer Project as argument.
    * Colour marking of contexts, if synchronized with dlt daemon
-   * Import DLT Stream with serial header functionality addded incl. resync to serial header and error counter
+   * Import DLT Stream with serial header functionality added incl. resync to serial header and error counter
    * Fixed bug when using COM ports bigger than 9
    * Fixies big endian target
-   * DLT header parameter Timestaps was handled in the wrong endianes format, big endian is correct now
+   * DLT header parameter Timestamps was handled in the wrong endianness format, big endian is correct now
    * Crashes when payload contains strings with corrupted length
    * Corrected non verbose plugin "S_RAWD" signal type
    * Non verbose plugin does not decode verbose messages any more

@@ -359,7 +359,7 @@ bool QDltFile::updateIndex()
                             storageLength = 13;
                         if(current_message_pos!=0)
                         {
-                            // first messages not at beginning or error occured before
+                            // first messages not at beginning or error occurred before
                             errors_in_file++;
                         }
                         // speed up move directly to message length, if inside current buffer
@@ -436,7 +436,7 @@ bool QDltFile::updateIndexFilter()
 
     /* update index filter by starting from last found index in list */
 
-    /* get lattest found index in filter list */
+    /* get latest found index in filter list */
     if(indexFilter.size()>0) {
         index = indexFilter[indexFilter.size()-1] + 1;
     }
@@ -608,7 +608,7 @@ QByteArray QDltFile::getMsg(int index) const
         long int cal_index = file->infile.size() - positionForIndex;
 
         if ( cal_index < 0 )
-            qDebug() << "Negativ index " << cal_index << index << "in" << file->infile.fileName() << __LINE__ << "of" << __FILE__;
+            qDebug() << "Negative index " << cal_index << index << "in" << file->infile.fileName() << __LINE__ << "of" << __FILE__;
         else
          buf = file->infile.read(file->infile.size() - positionForIndex);
     }
@@ -617,7 +617,7 @@ QByteArray QDltFile::getMsg(int index) const
         /* any other file position */
         long int cal_index = const_file->indexAll[index+1] - positionForIndex;
         if ( cal_index < 0 )
-            qDebug() << "Negativ index " << cal_index << index << "in" << __LINE__ << "of" << __FILE__;
+            qDebug() << "Negative index " << cal_index << index << "in" << __LINE__ << "of" << __FILE__;
         else
          buf = file->infile.read(cal_index);
     }

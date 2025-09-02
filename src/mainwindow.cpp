@@ -197,7 +197,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     if ( true == (bool) settings->StartupMinimized )
     {
-        qDebug() << "Start minimzed as defined in the settings";
+        qDebug() << "Start minimized as defined in the settings";
         this->setWindowState(Qt::WindowMinimized);
     }
 }
@@ -420,13 +420,13 @@ void MainWindow::initView()
     //ui->tableView->setItemDelegate(delegate);
     //ui->tableView->setItemDelegateForColumn(FieldNames::Payload,delegate);
 
-    /* preset the witdth of the columns somwhow */
+    /* preset the width of the columns somehow */
     for  (int col=0;col <= ui->tableView->model()->columnCount();col++)
     {
       ui->tableView->setColumnWidth(col,FieldNames::getColumnWidth((FieldNames::Fields)col,settings));
     }
 
-    // Some decoder-plugins can create very long payloads, which in turn severly impact performance
+    // Some decoder-plugins can create very long payloads, which in turn severely impact performance
     // So set some limit on what is displayed in the tableview. All details are always available using the message viewer-plugin
     ui->tableView->horizontalHeader()->setMaximumSectionSize(5000);
 
@@ -464,7 +464,7 @@ void MainWindow::initView()
     ui->filterWidget->setHeaderHidden(false);
     ui->pluginWidget->setHeaderHidden(false);
 
-    /* Start pulsing the apply changes button, when filters draged&dropped */
+    /* Start pulsing the apply changes button, when filters dragged&dropped */
     connect(ui->filterWidget, SIGNAL(filterItemDropped()), this, SLOT(filterOrderChanged()));
     connect(ui->filterWidget, SIGNAL(filterCountChanged()), this, SLOT(filterCountChanged()));
 
@@ -482,7 +482,7 @@ void MainWindow::initView()
                                           // but for some reason we need this for the very
                                           // first call when setting the tempfile string
                                           // unless this there are is displayed "..."
-                                          // more propper solution appreciated ...
+                                          // more proper solution appreciated ...
 
     statusFilename->setWordWrap(true);
 
@@ -927,7 +927,7 @@ void MainWindow::commandLineConvertToDLTDecoded()
 
     /* start exporter */
     QDltExporter exporter(&qfile,QDltOptManager::getInstance()->getConvertDestFile(),&pluginManager,QDltExporter::FormatDltDecoded,QDltExporter::SelectionFiltered,0,project.settings->automaticTimeSettings,project.settings->utcOffset,project.settings->dst,QDltOptManager::getInstance()->getDelimiter(),QDltOptManager::getInstance()->getSignature());
-    qDebug() << "Commandline decoding to dlt formated file" << QDltOptManager::getInstance()->getConvertDestFile();
+    qDebug() << "Commandline decoding to dlt formatted file" << QDltOptManager::getInstance()->getConvertDestFile();
     exporter.exportMessages();
     qDebug() << "DLT export DLT decoded done";
 }
@@ -1656,7 +1656,7 @@ void MainWindow::on_actionExport_triggered()
     }
     else if(exportSelection == QDltExporter::SelectionFiltered)
     {
-        qDebug() << "DLT Export of filterd" << qfile.sizeFilter() << "messages";
+        qDebug() << "DLT Export of filtered" << qfile.sizeFilter() << "messages";
         if(qfile.sizeFilter() <= 0)
         {
             QMessageBox::critical(this, QString("DLT Viewer"),
@@ -2355,7 +2355,7 @@ void MainWindow::applySettings()
     if(dltIndexer)
         dltIndexer->setFilterCacheEnabled(settings->filterCache);
 
-    // set DLT message chache size
+    // set DLT message cache size
     qfile.setCacheSize(settings->msgCacheSize);
 
     // set DLTv2 Support
@@ -2394,7 +2394,7 @@ void MainWindow::on_action_menuFile_Settings_triggered()
         {
             tableModel->setLoggingOnlyMode(settings->loggingOnlyMode);
             tableModel->modelChanged();
-            /* to remove ?? - in case logging only is disbaled the file is reloaded anyway
+            /* to remove ?? - in case logging only is disabled the file is reloaded anyway
             if(false == settings->loggingOnlyMode)
             {
                 if ( true == QDltOptManager::getInstance()->issilentMode() ) // inverse logic !!
@@ -2530,7 +2530,7 @@ bool MainWindow::openDlpFile(QString fileName)
         {
             applyConfigEnabled(true);
         }
-        // Reload logile to enable filters from project file
+        // Reload logfile to enable filters from project file
         if(QDltOptManager::getInstance()->isCommandlineMode())
             // if dlt viewer started as converter or with plugin option load file non multithreaded
             reloadLogFile(false,false);
@@ -2592,7 +2592,7 @@ QStringList MainWindow::getAvailableSerialPorts()
 
 QStringList MainWindow::getAvailableNetworkInterfaces()
 {
-    // the network interfaces are identified by the assigned IP addresse
+    // the network interfaces are identified by the assigned IP addresses
     // this is e.g. used to select interface for UDP reception
     QList<QNetworkInterface> mListIfaces = QNetworkInterface::allInterfaces();
     QStringList network_interface_namelist;
@@ -2662,8 +2662,8 @@ void MainWindow::on_action_menuConfig_ECU_Add_triggered()
          ( true == QDltOptManager::getInstance()->issilentMode() &&
          ( 1 == autoconnect ) ) )
     {
-      qDebug() << "Autoconnect at start: in slient mode just connect to default or project defined ECU ...";
-      autoconnect = 0; // we use this tmp flag because we don not want to alter the setings file !
+      qDebug() << "Autoconnect at start: in silent mode just connect to default or project defined ECU ...";
+      autoconnect = 0; // we use this tmp flag because we don not want to alter the settings file !
       // and we need the ECU dialog of course we initiated in the GUI after start !
     }
     else
@@ -2782,7 +2782,7 @@ void MainWindow::on_action_menuConfig_ECU_Edit_triggered()
             /* Update settings for recent hostnames and ports */
             setCurrentHostname(ecuitem->getHostname());
             setCurrentMCAddress(ecuitem->getmcastIP()); // store it in the settings file
-//tbd save is muticast
+//tbd save is multicast
             setCurrentIPPort(QString("%1").arg(ecuitem->getIpport()));
             setCurrentUDPPort(QString("%1").arg(ecuitem->getUdpport()));
             setCurrentEthIF(ecuitem->getEthIF());

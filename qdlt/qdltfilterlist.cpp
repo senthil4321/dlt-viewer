@@ -369,7 +369,7 @@ void QDltFilterList::updateSortedFilter()
             pfilters.append(filter);
         }
 
-        if(filter->isNegative() && filter->enableFilter)
+        if(filter->isNegativee() && filter->enableFilter)
         {
             /* add to negative list */
             nfilters.append(filter);

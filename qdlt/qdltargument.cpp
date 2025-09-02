@@ -75,7 +75,7 @@ QString QDltArgument::getTypeInfoString() const
     return qDltTypeInfo[typeInfo];
 }
 
-bool QDltArgument::setArgument(QByteArray &payload,unsigned int &offset, QDlt::DltEndiannessDef _endianess)
+bool QDltArgument::setArgument(QByteArray &payload,unsigned int &offset, QDlt::DltEndiannessDef _endianness)
 {
     unsigned short length=0,length2=0,length3=0;
 
@@ -86,7 +86,7 @@ bool QDltArgument::setArgument(QByteArray &payload,unsigned int &offset, QDlt::D
     offsetPayload = offset;
 
     /* store new endianness */
-    endianness = _endianess;
+    endianness = _endianness;
 
     /* get type info */
     if((unsigned int)payload.size()<(offset+sizeof(unsigned int)))

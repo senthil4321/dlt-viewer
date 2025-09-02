@@ -12,13 +12,13 @@
  * Mozilla Public License, v. 2.0. If a  copy of the MPL was not distributed with
  * this file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
- * \file filterdialog.cpp
+ * \file filteredialog.cpp
  * For further information see http://www.covesa.global/.
  * @licence end@
  */
 
-#include "filterdialog.h"
-#include "ui_filterdialog.h"
+#include "filteredialog.h"
+#include "ui_filteredialog.h"
 #include <QMessageBox>
 #include <QCloseEvent>
 #include <QRegularExpression>

@@ -315,10 +315,10 @@ void EcuDialog::setNetworkIFList(QString lastsetting)
     ui->comboBoxNetworkIF->setCurrentText(lastsetting);
 }
 
-void EcuDialog::setMulticastAddresses(QStringList mcaddresses)
+void EcuDialog::setMulticastAddresses(QStringList mcaddressess)
 {
     ui->comboBoxUDP_mcastaddress->clear();
-    ui->comboBoxUDP_mcastaddress->addItems(mcaddresses);
+    ui->comboBoxUDP_mcastaddress->addItems(mcaddressess);
 }
 
 

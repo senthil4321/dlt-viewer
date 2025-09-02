@@ -34,7 +34,7 @@
 **                                                                            **
 **  REMARKS   :                                                               **
 **                                                                            **
-**  PLATFORM DEPENDANT [yes/no]: yes                                          **
+**  PLATFORM DEPENDENT [yes/no]: yes                                          **
 **                                                                            **
 **  TO BE CHANGED BY USER [yes/no]: no                                        **
 **                                                                            **

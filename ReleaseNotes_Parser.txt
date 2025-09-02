@@ -9,7 +9,7 @@ Version 0.0.5 ALPHA
 Known issues
 ------------
 
-  * If started with GUI, a commandline window opens (because als concole mode possible)
+  * If started with GUI, a commandline window opens (because also concole mode possible)
 
 Changes
 -------

@@ -134,7 +134,7 @@ bool QDltFilter::isPositive() const
     return ( type == QDltFilter::positive );
 }
 
-bool QDltFilter::isNegative() const
+bool QDltFilter::isNegativee() const
 {
     return ( type == QDltFilter::negative );
 }

@@ -99,7 +99,7 @@ bool DltFileIndexer::index(int num)
     // load filter index if enabled
     if(filterCacheEnabled && loadIndexCache(dltFile->getFileName(num)))
     {
-        // loading index from filter is succesful
+        // loading index from filter is successful
         qDebug() << "Successfully loaded index cache for file" << dltFile->getFileName(num);// << __LINE__;
         return true;
     }
@@ -123,8 +123,8 @@ bool DltFileIndexer::index(int num)
         return true; // because it is just empty, not an error ...
     }
 
-    int modulo = f.size()/200; // seems to be the propper ratio ...
-    if (modulo == 0) // avoid divison by zero ( very small files )
+    int modulo = f.size()/200; // seems to be the proper ratio ...
+    if (modulo == 0) // avoid division by zero ( very small files )
     {
          modulo = 1;
     }
@@ -250,7 +250,7 @@ bool DltFileIndexer::index(int num)
             {
                 if(next_message_pos == 0)
                 {
-                    // very first message detected or the first message after an error occured
+                    // very first message detected or the first message after an error occurred
                     current_message_pos = pos+number-3;
                     counter_header = 3;
                     if(data[number] == 0x01)
@@ -259,7 +259,7 @@ bool DltFileIndexer::index(int num)
                         storageLength = 13;
                     if(current_message_pos!=0)
                     {
-                        // first messages not at beginning or error occured before
+                        // first messages not at beginning or error occurred before
                         errors_in_file++;
                         qDebug() << "ERROR in file" << dltFile->getFileName(num) << "detected new start sequence at index" << msgindex << "msg length" << message_length << "file position" << current_message_pos;
                         qDebug() << "------------";
@@ -313,14 +313,14 @@ bool DltFileIndexer::index(int num)
             else
             {
                 lastFound = 0; // no hit, so just go on with search for the startsequence
-                //qDebug() << "DLT recived but not the stop sign 0x01" << msgindex;
+                //qDebug() << "DLT received but not the stop sign 0x01" << msgindex;
             }
 
 
             /* stop if requested */
             if(true == stopFlag)
             {
-                qDebug().noquote() << "Request stoping indexing received" << __LINE__ << __FILE__;
+                qDebug().noquote() << "Request stopping indexing received" << __LINE__ << __FILE__;
                 emit(progress((abspos)));
                 delete[] data;
                 f.close();
@@ -338,7 +338,7 @@ bool DltFileIndexer::index(int num)
                     qDebug() << "CI:" << percent << "%";
             }
 
-        } // end of for loop to read within one segment accross "number"
+        } // end of for loop to read within one segment across "number"
     }
     while(length>0); // overall "do loop"
     qDebug() << "Create index: Finish";
@@ -413,7 +413,7 @@ bool DltFileIndexer::indexFilter(QStringList filenames)
     // load filter index, if enabled and not an initial loading of file
     if(filterCacheEnabled && mode != modeIndexAndFilter && loadFilterIndexCache(filterList,indexFilterList,filenames))
     {
-        // loading filter index from filter is succesful
+        // loading filter index from filter is successful
         qDebug() << "Loaded filter index cache for files" << filenames;
         return true;
     }
@@ -544,7 +544,7 @@ bool DltFileIndexer::indexDefaultFilter()
     emit(progressMax(dltFile->size()));
 
     unsigned int modulo = dltFile->size()/100;
-    if (modulo == 0) // avoid divison by zero
+    if (modulo == 0) // avoid division by zero
     {
          modulo = 1;
     }
@@ -1047,7 +1047,7 @@ bool DltFileIndexer::loadIndex(QString filename, QVector<qint64> &index)
     }
 
     int modvalue = file.size() / 100;
-    if (modvalue == 0) // avoid divison by zero
+    if (modvalue == 0) // avoid division by zero
     {
          modvalue = 1;
     }
@@ -1089,7 +1089,7 @@ bool DltFileIndexer::loadIndex(QString filename, QVector<qint64> &index)
     }
     while(length==sizeof(value));
 
-    // now that it is doen we have to set the 100 %
+    // now that it is done we have to set the 100 %
     if (false == QDltOptManager::getInstance()->issilentMode() )
       {
         emit(progress(fileSize));
