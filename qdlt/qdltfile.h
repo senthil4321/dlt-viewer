@@ -224,7 +224,7 @@ public:
     //! Check if message matches the filter.
     /*!
       \param msg The message to be checked
-      \return true if message will be displayed, false if message willl be filtered out
+      \return true if message will be displayed, false if message will be filtered out
     */
     bool checkFilter(QDltMsg &msg);
 
@@ -239,7 +239,7 @@ public:
     */
     void addFilterIndex (int index);
 
-    //! Check if message willl be marked.
+    //! Check if message will be marked.
     /*!
       Colours used are:
       1 = green
@@ -249,7 +249,7 @@ public:
       5 = light grey
       6 = dark grey
       \param msg The messages to be marked
-      \return 0 if message willl not be marked, colour if message willl be marked
+      \return 0 if message will not be marked, colour if message will be marked
     */
 #ifdef USECOLOR
     QColor checkMarker(const QDltMsg &msg);

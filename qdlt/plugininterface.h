@@ -59,7 +59,7 @@ public:
 
     //! The version number of the plugin.
     /*!
-      The plugin has to return a version number with formt X.Y.Z.
+      The plugin has to return a version number with format X.Y.Z.
       X counts up in case of real heavy changes (API changes or purpose changes)
       Y counts up when the module is reworked internally, functions are added etc
       Z counts up whenever a bug is fixed
@@ -107,7 +107,7 @@ public:
     */
     virtual bool saveConfig(QString filename) = 0;
 
-    //! Providing detaild information about the loaded configuration.
+    //! Providing detailed information about the loaded configuration.
     /*!
       The plugin can provide a detailed list of the loaded configuration.
       This is very useful to check, if the configuration is loaded successfully.

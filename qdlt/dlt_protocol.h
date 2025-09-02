@@ -169,7 +169,7 @@
 #define DLT_SERVICE_ID_SET_LOG_LEVEL                   0x01 /**< Service ID: Set log level */
 #define DLT_SERVICE_ID_SET_TRACE_STATUS                0x02 /**< Service ID: Set trace status */
 #define DLT_SERVICE_ID_GET_LOG_INFO                    0x03 /**< Service ID: Get log info */
-#define DLT_SERVICE_ID_GET_DEFAULT_LOG_LEVEL           0x04 /**< Service ID: Get dafault log level */
+#define DLT_SERVICE_ID_GET_DEFAULT_LOG_LEVEL           0x04 /**< Service ID: Get default log level */
 #define DLT_SERVICE_ID_STORE_CONFIG                    0x05 /**< Service ID: Store configuration */
 #define DLT_SERVICE_ID_RESET_TO_FACTORY_DEFAULT        0x06 /**< Service ID: Reset to factory defaults */
 #define DLT_SERVICE_ID_SET_COM_INTERFACE_STATUS        0x07 /**< Service ID: Set communication interface status */

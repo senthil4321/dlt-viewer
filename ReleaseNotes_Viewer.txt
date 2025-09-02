@@ -1409,7 +1409,7 @@ Fixes:
 2.1.0:
 
    * New Qt based implementation of viewer
-   * Indiviual columns for header fields
+   * Individual columns for header fields
    * Export to ASCII file
    * Import of Raw DLT Stream files (Without DLT Storage Header)
    * Search function added to find ASCII Text in Header and Payload
@@ -1424,7 +1424,7 @@ Fixes:
    * History for open files/projects/TCP Hostnames
    * Enable/Disable timing messages per ECU is now possible
    * Extended scrolling functionality (enable/disable scrolling by scrolling in list)
-   * Changed serial library because of sporadic crashes of teh application
+   * Changed serial library because of sporadic crashes of the application
    * Only one filter with same name can be added now
    * Corrected initialization of resync mode
    * Bug in Filter handling fixed (concerned Linux only)

@@ -64,7 +64,7 @@
 #define DLT_COMMON_CFG_H
 
 /*************/
-/* Changable */
+/* Changeable */
 /*************/
 
 /* Buffer length for temporary buffer */

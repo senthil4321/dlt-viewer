@@ -305,7 +305,7 @@ public:
 
     //! Set the binary header of the DLT message.
     /*!
-      Be careful with this function, binary data and interpreted data willl not be in sync anymore.
+      Be careful with this function, binary data and interpreted data will not be in sync anymore.
       \param data The new header of the DLT message
     */
     void setHeader(QByteArray &data) { header = data; }
@@ -325,15 +325,15 @@ public:
 
     //! Set the binary payload of the DLT message.
     /*!
-      Be careful with this function, binary data and interpreted data willl not be in sync anymore.
+      Be careful with this function, binary data and interpreted data will not be in sync anymore.
       \param data The new payload of the DLT message
     */
     void setPayload(QByteArray &data) { payload = data; }
 
     //! Generate binary header and payload.
     /*!
-      This function willl generate first the binary payload from the argument list of the DLt message.
-      In a second step it willl generate the binary header from all information in the DLT message.
+      This function will generate first the binary payload from the argument list of the DLt message.
+      In a second step it will generate the binary header from all information in the DLT message.
     */
     void genMsg();
 

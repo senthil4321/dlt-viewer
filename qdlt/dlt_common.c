@@ -34,7 +34,7 @@
 **                                                                            **
 **  REMARKS   :                                                               **
 **                                                                            **
-**  PLATFORM DEPENDANT [yes/no]: yes                                          **
+**  PLATFORM DEPENDENT [yes/no]: yes                                          **
 **                                                                            **
 **  TO BE CHANGED BY USER [yes/no]: no                                        **
 **                                                                            **
@@ -646,7 +646,7 @@ int dlt_filter_delete(DltFilter *filter,const char *apid,const char *ctid, int v
 
     if (filter->counter>0)
     {
-        /* Get first occurence of apid and ctid in filter array */
+        /* Get first occurrence of apid and ctid in filter array */
         for (j=0; j<filter->counter; j++)
         {
             if ((memcmp(filter->apid[j],apid,DLT_ID_SIZE)==0) &&
@@ -690,12 +690,12 @@ int dlt_message_init(DltMessage *msg,int verbose)
         return -1;
     }
 
-    /* initalise structure parameters */
+    /* initialise structure parameters */
     msg->headersize = 0;
     msg->datasize = 0;
     msg->databuffer = 0;
     msg->storageheader = 0;
-    msg->standardheader = 0;
+    msg->standarddheader = 0;
     msg->extendedheader = 0;
     msg->found_serialheader = 0;
     msg->optionalheaderv2.buffer=0;
@@ -766,7 +766,7 @@ int dlt_message_header_flags(DltMessage *msg,char *text,int textlength,int flags
     if ((flags & DLT_HEADER_SHOW_TMSTP) == DLT_HEADER_SHOW_TMSTP)
     {
         /* print timestamp if available */
-        if ( DLT_IS_HTYP_WTMS(msg->standardheader->htyp) )
+        if ( DLT_IS_HTYP_WTMS(msg->standarddheader->htyp) )
         {
             sprintf(text+strlen(text),"%10u ",msg->headerextra.tmsp);
         }
@@ -779,13 +779,13 @@ int dlt_message_header_flags(DltMessage *msg,char *text,int textlength,int flags
     if ((flags & DLT_HEADER_SHOW_MSGCNT) == DLT_HEADER_SHOW_MSGCNT)
     {
         /* print message counter */
-        sprintf(text+strlen(text),"%.3d ",msg->standardheader->mcnt);
+        sprintf(text+strlen(text),"%.3d ",msg->standarddheader->mcnt);
     }
 
     if ((flags & DLT_HEADER_SHOW_ECUID) == DLT_HEADER_SHOW_ECUID)
     {
         /* print ecu id, use header extra if available, else storage header value */
-        if ( DLT_IS_HTYP_WEID(msg->standardheader->htyp) )
+        if ( DLT_IS_HTYP_WEID(msg->standarddheader->htyp) )
         {
             dlt_print_id(text+strlen(text),msg->headerextra.ecu);
         }
@@ -799,7 +799,7 @@ int dlt_message_header_flags(DltMessage *msg,char *text,int textlength,int flags
     if ((flags & DLT_HEADER_SHOW_APID) == DLT_HEADER_SHOW_APID)
     {
         sprintf(text+strlen(text)," ");
-        if ((DLT_IS_HTYP_UEH(msg->standardheader->htyp)) && (msg->extendedheader->apid[0]!=0))
+        if ((DLT_IS_HTYP_UEH(msg->standarddheader->htyp)) && (msg->extendedheader->apid[0]!=0))
         {
             dlt_print_id(text+strlen(text),msg->extendedheader->apid);
         }
@@ -813,7 +813,7 @@ int dlt_message_header_flags(DltMessage *msg,char *text,int textlength,int flags
 
     if ((flags & DLT_HEADER_SHOW_CTID) == DLT_HEADER_SHOW_CTID)
     {
-        if ((DLT_IS_HTYP_UEH(msg->standardheader->htyp)) && (msg->extendedheader->ctid[0]!=0))
+        if ((DLT_IS_HTYP_UEH(msg->standarddheader->htyp)) && (msg->extendedheader->ctid[0]!=0))
         {
             dlt_print_id(text+strlen(text),msg->extendedheader->ctid);
         }
@@ -826,7 +826,7 @@ int dlt_message_header_flags(DltMessage *msg,char *text,int textlength,int flags
     }
 
     /* print info about message type and length */
-    if (DLT_IS_HTYP_UEH(msg->standardheader->htyp))
+    if (DLT_IS_HTYP_UEH(msg->standarddheader->htyp))
     {
         if ((flags & DLT_HEADER_SHOW_MSGTYPE) == DLT_HEADER_SHOW_MSGTYPE)
         {
@@ -971,7 +971,7 @@ int dlt_message_payload(DltMessage *msg,char *text,int textlength,int type,int v
     {
 
         DLT_MSG_READ_VALUE(id_tmp,ptr,datalength,uint32_t);
-        id=DLT_ENDIAN_GET_32(msg->standardheader->htyp, id_tmp);
+        id=DLT_ENDIAN_GET_32(msg->standarddheader->htyp, id_tmp);
 
         if (textlength<((datalength*3)+20))
         {
@@ -1059,7 +1059,7 @@ int dlt_message_payload(DltMessage *msg,char *text,int textlength,int type,int v
 
         /* first read the type info of the argument */
         DLT_MSG_READ_VALUE(type_info_tmp,ptr,datalength,uint32_t);
-        type_info=DLT_ENDIAN_GET_32(msg->standardheader->htyp, type_info_tmp);
+        type_info=DLT_ENDIAN_GET_32(msg->standarddheader->htyp, type_info_tmp);
 
         /* print out argument */
         if (dlt_message_argument_print(msg, type_info, pptr, pdatalength, text, textlength, -1, 0)==-1)
@@ -1084,7 +1084,7 @@ int dlt_message_filter_check(DltMessage *msg,DltFilter *filter,int verbose)
         return -1;
     }
 
-    if ((filter->counter==0) || (!(DLT_IS_HTYP_UEH(msg->standardheader->htyp))))
+    if ((filter->counter==0) || (!(DLT_IS_HTYP_UEH(msg->standarddheader->htyp))))
     {
         /* no filter is set, or no extended header is available, so do as filter is matching */
         return 1;
@@ -1093,7 +1093,7 @@ int dlt_message_filter_check(DltMessage *msg,DltFilter *filter,int verbose)
     for (num=0;num<filter->counter;num++)
     {
         /* check each filter if it matches */
-        if ((DLT_IS_HTYP_UEH(msg->standardheader->htyp)) &&
+        if ((DLT_IS_HTYP_UEH(msg->standarddheader->htyp)) &&
                 (filter->apid[num][0]==0 || memcmp(filter->apid[num],msg->extendedheader->apid,DLT_ID_SIZE)==0) &&
                 (filter->ctid[num][0]==0 || memcmp(filter->ctid[num],msg->extendedheader->ctid,DLT_ID_SIZE)==0) )
         {
@@ -1119,7 +1119,7 @@ int dlt_message_read(DltMessage *msg,uint8_t *buffer,unsigned int length,int res
     /* initialize resync_offset */
     msg->resync_offset=0;
 
-    /* check if message contains serial header, smaller than standard header */
+    /* check if message contains serial header, smaller than standardd header */
     if (length<sizeof(dltSerialHeader))
     {
         /* dlt_log(LOG_ERR, "Length smaller than serial header!\n"); */
@@ -1167,22 +1167,22 @@ int dlt_message_read(DltMessage *msg,uint8_t *buffer,unsigned int length,int res
         }
     }
 
-    /* check that standard header fits buffer */
+    /* check that standardd header fits buffer */
     if (length<sizeof(DltStandardHeader))
     {
-        /* dlt_log(LOG_ERR, "Length smaller than standard header!\n"); */
+        /* dlt_log(LOG_ERR, "Length smaller than standardd header!\n"); */
         return -1;
     }
     memcpy(msg->headerbuffer+sizeof(DltStorageHeader),buffer,sizeof(DltStandardHeader));
 
     /* set ptrs to structures */
     msg->storageheader = (DltStorageHeader*) msg->headerbuffer;
-    msg->standardheader = (DltStandardHeader*) (msg->headerbuffer + sizeof(DltStorageHeader));
+    msg->standarddheader = (DltStandardHeader*) (msg->headerbuffer + sizeof(DltStorageHeader));
 
     /* calculate complete size of headers */
-    extra_size = DLT_STANDARD_HEADER_EXTRA_SIZE(msg->standardheader->htyp)+(DLT_IS_HTYP_UEH(msg->standardheader->htyp) ? sizeof(DltExtendedHeader) : 0);
+    extra_size = DLT_STANDARD_HEADER_EXTRA_SIZE(msg->standarddheader->htyp)+(DLT_IS_HTYP_UEH(msg->standarddheader->htyp) ? sizeof(DltExtendedHeader) : 0);
     msg->headersize = sizeof(DltStorageHeader) + sizeof(DltStandardHeader) + extra_size;
-    msg->datasize =  DLT_BETOH_16(msg->standardheader->len) - (msg->headersize - sizeof(DltStorageHeader));
+    msg->datasize =  DLT_BETOH_16(msg->standarddheader->len) - (msg->headersize - sizeof(DltStorageHeader));
 
     if (verbose)
     {
@@ -1208,7 +1208,7 @@ int dlt_message_read(DltMessage *msg,uint8_t *buffer,unsigned int length,int res
         return -1;
     }
 
-    /* load standard header extra parameters and Extended header if used */
+    /* load standardd header extra parameters and Extended header if used */
     if (extra_size>0)
     {
         if (length  < (msg->headersize - sizeof(DltStorageHeader)))
@@ -1218,11 +1218,11 @@ int dlt_message_read(DltMessage *msg,uint8_t *buffer,unsigned int length,int res
 
         memcpy(msg->headerbuffer+sizeof(DltStorageHeader)+sizeof(DltStandardHeader),buffer+sizeof(DltStandardHeader),extra_size);
 
-        /* set extended header ptr and get standard header extra parameters */
-        if (DLT_IS_HTYP_UEH(msg->standardheader->htyp))
+        /* set extended header ptr and get standardd header extra parameters */
+        if (DLT_IS_HTYP_UEH(msg->standarddheader->htyp))
         {
             msg->extendedheader = (DltExtendedHeader*) (msg->headerbuffer + sizeof(DltStorageHeader) + sizeof(DltStandardHeader) +
-                                  DLT_STANDARD_HEADER_EXTRA_SIZE(msg->standardheader->htyp));
+                                  DLT_STANDARD_HEADER_EXTRA_SIZE(msg->standarddheader->htyp));
         }
         else
         {
@@ -1269,23 +1269,23 @@ int dlt_message_get_extraparameters(DltMessage *msg,int verbose)
         return -1;
     }
 
-    if (DLT_IS_HTYP_WEID(msg->standardheader->htyp))
+    if (DLT_IS_HTYP_WEID(msg->standarddheader->htyp))
     {
         memcpy(msg->headerextra.ecu,msg->headerbuffer + sizeof(DltStorageHeader) + sizeof(DltStandardHeader),DLT_ID_SIZE);
     }
 
-    if (DLT_IS_HTYP_WSID(msg->standardheader->htyp))
+    if (DLT_IS_HTYP_WSID(msg->standarddheader->htyp))
     {
         memcpy(&(msg->headerextra.seid),msg->headerbuffer + sizeof(DltStorageHeader) + sizeof(DltStandardHeader)
-               + (DLT_IS_HTYP_WEID(msg->standardheader->htyp) ? DLT_SIZE_WEID : 0), DLT_SIZE_WSID);
+               + (DLT_IS_HTYP_WEID(msg->standarddheader->htyp) ? DLT_SIZE_WEID : 0), DLT_SIZE_WSID);
         msg->headerextra.seid = DLT_BETOH_32(msg->headerextra.seid);
     }
 
-    if (DLT_IS_HTYP_WTMS(msg->standardheader->htyp))
+    if (DLT_IS_HTYP_WTMS(msg->standarddheader->htyp))
     {
         memcpy(&(msg->headerextra.tmsp),msg->headerbuffer + sizeof(DltStorageHeader) + sizeof(DltStandardHeader)
-               + (DLT_IS_HTYP_WEID(msg->standardheader->htyp) ? DLT_SIZE_WEID : 0)
-               + (DLT_IS_HTYP_WSID(msg->standardheader->htyp) ? DLT_SIZE_WSID : 0),DLT_SIZE_WTMS);
+               + (DLT_IS_HTYP_WEID(msg->standarddheader->htyp) ? DLT_SIZE_WEID : 0)
+               + (DLT_IS_HTYP_WSID(msg->standarddheader->htyp) ? DLT_SIZE_WSID : 0),DLT_SIZE_WTMS);
         msg->headerextra.tmsp = DLT_BETOH_32(msg->headerextra.tmsp);
     }
 
@@ -1301,24 +1301,24 @@ int dlt_message_set_extraparameters(DltMessage *msg,int verbose)
         return -1;
     }
 
-    if (DLT_IS_HTYP_WEID(msg->standardheader->htyp))
+    if (DLT_IS_HTYP_WEID(msg->standarddheader->htyp))
     {
         memcpy(msg->headerbuffer + sizeof(DltStorageHeader) + sizeof(DltStandardHeader),msg->headerextra.ecu,DLT_ID_SIZE);
     }
 
-    if (DLT_IS_HTYP_WSID(msg->standardheader->htyp))
+    if (DLT_IS_HTYP_WSID(msg->standarddheader->htyp))
     {
         msg->headerextra.seid = DLT_HTOBE_32(msg->headerextra.seid);
         memcpy(msg->headerbuffer + sizeof(DltStorageHeader) + sizeof(DltStandardHeader)
-               + (DLT_IS_HTYP_WEID(msg->standardheader->htyp) ? DLT_SIZE_WEID : 0), &(msg->headerextra.seid),DLT_SIZE_WSID);
+               + (DLT_IS_HTYP_WEID(msg->standarddheader->htyp) ? DLT_SIZE_WEID : 0), &(msg->headerextra.seid),DLT_SIZE_WSID);
     }
 
-    if (DLT_IS_HTYP_WTMS(msg->standardheader->htyp))
+    if (DLT_IS_HTYP_WTMS(msg->standarddheader->htyp))
     {
         msg->headerextra.tmsp = DLT_HTOBE_32(msg->headerextra.tmsp);
         memcpy(msg->headerbuffer + sizeof(DltStorageHeader) + sizeof(DltStandardHeader)
-               + (DLT_IS_HTYP_WEID(msg->standardheader->htyp) ? DLT_SIZE_WEID : 0)
-               + (DLT_IS_HTYP_WSID(msg->standardheader->htyp) ? DLT_SIZE_WSID : 0), &(msg->headerextra.tmsp),DLT_SIZE_WTMS);
+               + (DLT_IS_HTYP_WEID(msg->standarddheader->htyp) ? DLT_SIZE_WEID : 0)
+               + (DLT_IS_HTYP_WSID(msg->standarddheader->htyp) ? DLT_SIZE_WSID : 0), &(msg->headerextra.tmsp),DLT_SIZE_WTMS);
     }
 
     return 0;
@@ -1333,7 +1333,7 @@ int dlt_file_init(DltFile *file,int verbose)
         return -1;
     }
 
-    /* initalise structure parameters */
+    /* initialise structure parameters */
     file->handle = 0;
     file->counter = 0;
     file->counter_total = 0;
@@ -1386,7 +1386,7 @@ int dlt_file_read_header(DltFile *file,int verbose)
 
     /* set ptrs to structures */
     file->msg.storageheader = (DltStorageHeader*) file->msg.headerbuffer;
-    file->msg.standardheader = (DltStandardHeader*) (file->msg.headerbuffer + sizeof(DltStorageHeader));
+    file->msg.standarddheader = (DltStandardHeader*) (file->msg.headerbuffer + sizeof(DltStorageHeader));
 
     /* check id of storage header */
     if (dlt_check_storageheader(file->msg.storageheader)==0)
@@ -1397,8 +1397,8 @@ int dlt_file_read_header(DltFile *file,int verbose)
 
     /* calculate complete size of headers */
     file->msg.headersize = sizeof(DltStorageHeader) + sizeof(DltStandardHeader) +
-                           DLT_STANDARD_HEADER_EXTRA_SIZE(file->msg.standardheader->htyp) + (DLT_IS_HTYP_UEH(file->msg.standardheader->htyp) ? sizeof(DltExtendedHeader) : 0);
-    file->msg.datasize = DLT_BETOH_16(file->msg.standardheader->len) + sizeof(DltStorageHeader) - file->msg.headersize;
+                           DLT_STANDARD_HEADER_EXTRA_SIZE(file->msg.standarddheader->htyp) + (DLT_IS_HTYP_UEH(file->msg.standarddheader->htyp) ? sizeof(DltExtendedHeader) : 0);
+    file->msg.datasize = DLT_BETOH_16(file->msg.standarddheader->len) + sizeof(DltStorageHeader) - file->msg.headersize;
     if (verbose)
     {
         sprintf(str,"Header Size: %d\n",file->msg.headersize);
@@ -1491,7 +1491,7 @@ int dlt_file_read_header_raw(DltFile *file,int resync,int verbose)
 
     /* set ptrs to structures */
     file->msg.storageheader = (DltStorageHeader*) file->msg.headerbuffer; // this points now to a empty storage header (filled with '0')
-    file->msg.standardheader = (DltStandardHeader*) (file->msg.headerbuffer + sizeof(DltStorageHeader));
+    file->msg.standarddheader = (DltStandardHeader*) (file->msg.headerbuffer + sizeof(DltStorageHeader));
 
     /* Skip storage header field, fill this field with '0' */
     memset(file->msg.storageheader,0,sizeof(DltStorageHeader));
@@ -1503,8 +1503,8 @@ int dlt_file_read_header_raw(DltFile *file,int resync,int verbose)
 
     /* calculate complete size of headers */
     file->msg.headersize = sizeof(DltStorageHeader) + sizeof(DltStandardHeader) +
-                           DLT_STANDARD_HEADER_EXTRA_SIZE(file->msg.standardheader->htyp) + (DLT_IS_HTYP_UEH(file->msg.standardheader->htyp) ? sizeof(DltExtendedHeader) : 0);
-    file->msg.datasize = DLT_BETOH_16(file->msg.standardheader->len) + sizeof(DltStorageHeader) - file->msg.headersize;
+                           DLT_STANDARD_HEADER_EXTRA_SIZE(file->msg.standarddheader->htyp) + (DLT_IS_HTYP_UEH(file->msg.standarddheader->htyp) ? sizeof(DltExtendedHeader) : 0);
+    file->msg.datasize = DLT_BETOH_16(file->msg.standarddheader->len) + sizeof(DltStorageHeader) - file->msg.headersize;
     if (verbose)
     {
         sprintf(str,"Header Size: %d\n",file->msg.headersize);
@@ -1551,7 +1551,7 @@ int dltv2_file_read_header_raw(DltFile *file,int resync,int verbose)
         /* go back to last file position */
             fseek(file->handle,file->file_position,SEEK_SET);
      }
-    //swap endianess of the length and htyp 
+    //swap endianness of the length and htyp 
     file->msg.baseheaderv2.len=(file->msg.baseheaderv2.len >> 8) | (file->msg.baseheaderv2.len << 8);
     
     if(((file->msg.baseheaderv2.htyp2 & 0x03)==0)||((file->msg.baseheaderv2.htyp2 & 0x03)==2)){// 0x0 = verbose, 0x1 = non verbose, 0x2 = control
@@ -1593,7 +1593,7 @@ int dltv2_file_read_header_raw(DltFile *file,int resync,int verbose)
     //initialize ectended header buffer
     if (file->msg.extendedheaderv2.buffer==NULL){
             
-            file->msg.extendedheaderv2.buffer=(uint8_t*)malloc(100);//arbitary number. DLTv2 allows for dynamic header length but
+            file->msg.extendedheaderv2.buffer=(uint8_t*)malloc(100);//arbitrary number. DLTv2 allows for dynamic header length but
                                                                     // very unlikely to exceed 100 bytes
            
         }
@@ -1706,14 +1706,14 @@ int dlt_file_read_header_extended(DltFile *file, int verbose)
         return -1;
     }
 
-    /* load standard header extra parameters if used */
-    if (DLT_STANDARD_HEADER_EXTRA_SIZE(file->msg.standardheader->htyp))
+    /* load standardd header extra parameters if used */
+    if (DLT_STANDARD_HEADER_EXTRA_SIZE(file->msg.standarddheader->htyp))
     {
         if (fread(file->msg.headerbuffer+sizeof(DltStorageHeader)+sizeof(DltStandardHeader),
-                  DLT_STANDARD_HEADER_EXTRA_SIZE(file->msg.standardheader->htyp),
+                  DLT_STANDARD_HEADER_EXTRA_SIZE(file->msg.standarddheader->htyp),
                   1,file->handle)!=1)
         {
-            dlt_log(LOG_ERR, "Cannot read standard header extra parameters from file!\n");
+            dlt_log(LOG_ERR, "Cannot read standardd header extra parameters from file!\n");
             return -1;
         }
 
@@ -1721,14 +1721,14 @@ int dlt_file_read_header_extended(DltFile *file, int verbose)
     }
 
     /* load Extended header if used */
-    if (DLT_IS_HTYP_UEH(file->msg.standardheader->htyp)==0)
+    if (DLT_IS_HTYP_UEH(file->msg.standarddheader->htyp)==0)
     {
         /* there is nothing to be loaded */
         return 0;
     }
 
-    if (fread(file->msg.headerbuffer+sizeof(DltStorageHeader)+sizeof(DltStandardHeader)+DLT_STANDARD_HEADER_EXTRA_SIZE(file->msg.standardheader->htyp),
-              (DLT_IS_HTYP_UEH(file->msg.standardheader->htyp) ? sizeof(DltExtendedHeader) : 0),
+    if (fread(file->msg.headerbuffer+sizeof(DltStorageHeader)+sizeof(DltStandardHeader)+DLT_STANDARD_HEADER_EXTRA_SIZE(file->msg.standarddheader->htyp),
+              (DLT_IS_HTYP_UEH(file->msg.standarddheader->htyp) ? sizeof(DltExtendedHeader) : 0),
               1,file->handle)!=1)
     {
         dlt_log(LOG_ERR, "Cannot read extended header from file!\n");
@@ -1736,10 +1736,10 @@ int dlt_file_read_header_extended(DltFile *file, int verbose)
     }
 
     /* set extended header ptr */
-    if (DLT_IS_HTYP_UEH(file->msg.standardheader->htyp))
+    if (DLT_IS_HTYP_UEH(file->msg.standarddheader->htyp))
     {
         file->msg.extendedheader = (DltExtendedHeader*) (file->msg.headerbuffer + sizeof(DltStorageHeader) + sizeof(DltStandardHeader) +
-                                   DLT_STANDARD_HEADER_EXTRA_SIZE(file->msg.standardheader->htyp));
+                                   DLT_STANDARD_HEADER_EXTRA_SIZE(file->msg.standarddheader->htyp));
     }
     else
     {
@@ -1866,7 +1866,7 @@ int dlt_file_read(DltFile *file,int verbose)
         file->index = ptr;
     }
 
-    /* set to end of last succesful read message, because of conflicting calls to dlt_file_read and dlt_file_message */
+    /* set to end of last successful read message, because of conflicting calls to dlt_file_read and dlt_file_message */
     fseek(file->handle,file->file_position,SEEK_SET);
 
     /* get file position at start of DLT message */
@@ -1979,7 +1979,7 @@ int dlt_file_read_raw(DltFile *file,int resync, int verbose)
         file->index = ptr;
     }
 
-    /* set to end of last succesful read message, because of conflicting calls to dlt_file_read and dlt_file_message */
+    /* set to end of last successful read message, because of conflicting calls to dlt_file_read and dlt_file_message */
     fseek(file->handle,file->file_position,SEEK_SET);
 
     /* get file position at start of DLT message */
@@ -2060,7 +2060,7 @@ int dltv2_file_read_raw(DltFile *file,int resync,int verbose){
         file->index = ptr;
     }
     
-    /* read standar headers */
+    /* read standard headers */
     headerlen=dltv2_file_read_header_raw(file,0,0);
     if (headerlen<7){
          /* go back to last position in file */
@@ -2069,7 +2069,7 @@ int dltv2_file_read_raw(DltFile *file,int resync,int verbose){
     }
 
     file->msg.datasize=file->msg.baseheaderv2.len-headerlen;
-    //swap endianess of the length
+    //swap endianness of the length
     file->msg.baseheaderv2.len=(file->msg.baseheaderv2.len >> 8) | (file->msg.baseheaderv2.len << 8);
     /* read the data */
      if (dlt_file_read_data(file,verbose)<0)
@@ -3245,12 +3245,12 @@ uint32_t dlt_uptime(void)
     return (uint32_t)(GetTickCount()*10); /* GetTickCount() return DWORD */
 
 #elif defined (__APPLE__)
-    static mach_timebase_info_data_t sTimebaseInfo = { .numer = 0, .denom = 0 };
+    static mach_timebase_info_data_t sTimebaseInfo = { .number = 0, .denom = 0 };
     if (0 == sTimebaseInfo.denom) {
         mach_timebase_info(&sTimebaseInfo);
     }
     uint64_t now = mach_absolute_time();
-    uint64_t nano = now * sTimebaseInfo.numer / sTimebaseInfo.denom;
+    uint64_t nano = now * sTimebaseInfo.number / sTimebaseInfo.denom;
 
     return (uint32_t)(nano/100000);
 #else
@@ -3373,7 +3373,7 @@ int dlt_message_argument_print(DltMessage *msg,uint32_t type_info,uint8_t **ptr,
             DLT_MSG_READ_VALUE(length_tmp,*ptr,*datalength,uint16_t);
             if((*datalength)<0)
                 return -1;
-            length=DLT_ENDIAN_GET_16(msg->standardheader->htyp, length_tmp);
+            length=DLT_ENDIAN_GET_16(msg->standarddheader->htyp, length_tmp);
         }
         else
         {
@@ -3385,7 +3385,7 @@ int dlt_message_argument_print(DltMessage *msg,uint32_t type_info,uint8_t **ptr,
             DLT_MSG_READ_VALUE(length2_tmp,*ptr,*datalength,uint16_t);
             if((*datalength)<0)
                 return -1;
-            length2=DLT_ENDIAN_GET_16(msg->standardheader->htyp, length2_tmp);
+            length2=DLT_ENDIAN_GET_16(msg->standarddheader->htyp, length2_tmp);
             if((*datalength)<length2)
                 return -1;
             *ptr += length2;
@@ -3405,7 +3405,7 @@ int dlt_message_argument_print(DltMessage *msg,uint32_t type_info,uint8_t **ptr,
             DLT_MSG_READ_VALUE(length2_tmp,*ptr,*datalength,uint16_t);
             if((*datalength)<0)
                 return -1;
-            length2=DLT_ENDIAN_GET_16(msg->standardheader->htyp, length2_tmp);
+            length2=DLT_ENDIAN_GET_16(msg->standarddheader->htyp, length2_tmp);
             if((*datalength)<length2)
                 return -1;
             *ptr += length2;
@@ -3425,11 +3425,11 @@ int dlt_message_argument_print(DltMessage *msg,uint32_t type_info,uint8_t **ptr,
             DLT_MSG_READ_VALUE(length2_tmp,*ptr,*datalength,uint16_t);
             if((*datalength)<0)
                 return -1;
-            length2=DLT_ENDIAN_GET_16(msg->standardheader->htyp, length2_tmp);
+            length2=DLT_ENDIAN_GET_16(msg->standarddheader->htyp, length2_tmp);
             DLT_MSG_READ_VALUE(length3_tmp,*ptr,*datalength,uint16_t);
             if((*datalength)<0)
                 return -1;
-            length3=DLT_ENDIAN_GET_16(msg->standardheader->htyp, length3_tmp);
+            length3=DLT_ENDIAN_GET_16(msg->standarddheader->htyp, length3_tmp);
             if((*datalength)<length2)
                 return -1;
             *ptr += length2;
@@ -3509,7 +3509,7 @@ int dlt_message_argument_print(DltMessage *msg,uint32_t type_info,uint8_t **ptr,
 					DLT_MSG_READ_VALUE(value16i_tmp,*ptr,*datalength,int16_t);
                     if((*datalength)<0)
                         return -1;
-                    value16i=DLT_ENDIAN_GET_16(msg->standardheader->htyp, value16i_tmp);
+                    value16i=DLT_ENDIAN_GET_16(msg->standarddheader->htyp, value16i_tmp);
 					sprintf(text+strlen(text),"%hd",value16i);
 				}
 				else
@@ -3519,7 +3519,7 @@ int dlt_message_argument_print(DltMessage *msg,uint32_t type_info,uint8_t **ptr,
 					DLT_MSG_READ_VALUE(value16u_tmp,*ptr,*datalength,uint16_t);
                     if((*datalength)<0)
                         return -1;
-                    value16u=DLT_ENDIAN_GET_16(msg->standardheader->htyp, value16u_tmp);
+                    value16u=DLT_ENDIAN_GET_16(msg->standarddheader->htyp, value16u_tmp);
 					sprintf(text+strlen(text),"%hu",value16u);
 				}
 				break;
@@ -3533,7 +3533,7 @@ int dlt_message_argument_print(DltMessage *msg,uint32_t type_info,uint8_t **ptr,
 					DLT_MSG_READ_VALUE(value32i_tmp,*ptr,*datalength,int32_t);
                     if((*datalength)<0)
                         return -1;
-                    value32i=DLT_ENDIAN_GET_32(msg->standardheader->htyp, (uint32_t)value32i_tmp);
+                    value32i=DLT_ENDIAN_GET_32(msg->standarddheader->htyp, (uint32_t)value32i_tmp);
 					sprintf(text+strlen(text),"%d",value32i);
 				}
 				else
@@ -3543,7 +3543,7 @@ int dlt_message_argument_print(DltMessage *msg,uint32_t type_info,uint8_t **ptr,
 					DLT_MSG_READ_VALUE(value32u_tmp,*ptr,*datalength,uint32_t);
                     if((*datalength)<0)
                         return -1;
-                    value32u=DLT_ENDIAN_GET_32(msg->standardheader->htyp, value32u_tmp);
+                    value32u=DLT_ENDIAN_GET_32(msg->standarddheader->htyp, value32u_tmp);
 					sprintf(text+strlen(text),"%u",value32u);
 				}
 				break;
@@ -3557,7 +3557,7 @@ int dlt_message_argument_print(DltMessage *msg,uint32_t type_info,uint8_t **ptr,
 					DLT_MSG_READ_VALUE(value64i_tmp,*ptr,*datalength,int64_t);
                     if((*datalength)<0)
                         return -1;
-                    value64i=DLT_ENDIAN_GET_64(msg->standardheader->htyp, (uint64_t)value64i_tmp);
+                    value64i=DLT_ENDIAN_GET_64(msg->standarddheader->htyp, (uint64_t)value64i_tmp);
 	#if defined (__WIN32__) && !defined(_MSC_VER)
 					sprintf(text+strlen(text),"%I64d",value64i);
 	#else
@@ -3571,7 +3571,7 @@ int dlt_message_argument_print(DltMessage *msg,uint32_t type_info,uint8_t **ptr,
 					DLT_MSG_READ_VALUE(value64u_tmp,*ptr,*datalength,uint64_t);
                     if((*datalength)<0)
                         return -1;
-                    value64u=DLT_ENDIAN_GET_64(msg->standardheader->htyp, value64u_tmp);
+                    value64u=DLT_ENDIAN_GET_64(msg->standarddheader->htyp, value64u_tmp);
 	#if defined (__WIN32__) && !defined(_MSC_VER)
 					sprintf(text+strlen(text),"%I64u",value64u);
 	#else
@@ -3604,11 +3604,11 @@ int dlt_message_argument_print(DltMessage *msg,uint32_t type_info,uint8_t **ptr,
             DLT_MSG_READ_VALUE(length2_tmp,*ptr,*datalength,uint16_t);
             if((*datalength)<0)
                 return -1;
-            length2=DLT_ENDIAN_GET_16(msg->standardheader->htyp, length2_tmp);
+            length2=DLT_ENDIAN_GET_16(msg->standarddheader->htyp, length2_tmp);
             DLT_MSG_READ_VALUE(length3_tmp,*ptr,*datalength,uint16_t);
             if((*datalength)<0)
                 return -1;
-            length3=DLT_ENDIAN_GET_16(msg->standardheader->htyp, length3_tmp);
+            length3=DLT_ENDIAN_GET_16(msg->standarddheader->htyp, length3_tmp);
             if((*datalength)<length2)
                 return -1;
             *ptr += length2;
@@ -3652,7 +3652,7 @@ int dlt_message_argument_print(DltMessage *msg,uint32_t type_info,uint8_t **ptr,
                     if((*datalength)<0)
                         return -1;
                     memcpy(&value32f_tmp_int32i,&value32f_tmp,sizeof(float32_t));
-					value32f_tmp_int32i_swaped=DLT_ENDIAN_GET_32(msg->standardheader->htyp, (uint32_t)value32f_tmp_int32i);
+					value32f_tmp_int32i_swaped=DLT_ENDIAN_GET_32(msg->standarddheader->htyp, (uint32_t)value32f_tmp_int32i);
 					memcpy(&value32f,&value32f_tmp_int32i_swaped,sizeof(float32_t));
 					sprintf(text+strlen(text),"%g",value32f);
 				}
@@ -3675,7 +3675,7 @@ int dlt_message_argument_print(DltMessage *msg,uint32_t type_info,uint8_t **ptr,
                     if((*datalength)<0)
                         return -1;
                     memcpy(&value64f_tmp_int64i,&value64f_tmp,sizeof(float64_t));
-					value64f_tmp_int64i_swaped=DLT_ENDIAN_GET_64(msg->standardheader->htyp, (uint64_t)value64f_tmp_int64i);
+					value64f_tmp_int64i_swaped=DLT_ENDIAN_GET_64(msg->standarddheader->htyp, (uint64_t)value64f_tmp_int64i);
 					memcpy(&value64f,&value64f_tmp_int64i_swaped,sizeof(float64_t));
 					sprintf(text+strlen(text),"%g",value64f);
 				}
@@ -3709,13 +3709,13 @@ int dlt_message_argument_print(DltMessage *msg,uint32_t type_info,uint8_t **ptr,
         DLT_MSG_READ_VALUE(length_tmp,*ptr,*datalength,uint16_t);
         if((*datalength)<0)
             return -1;
-        length=DLT_ENDIAN_GET_16(msg->standardheader->htyp, length_tmp);
+        length=DLT_ENDIAN_GET_16(msg->standarddheader->htyp, length_tmp);
         if (type_info & DLT_TYPE_INFO_VARI)
         {
             DLT_MSG_READ_VALUE(length2_tmp,*ptr,*datalength,uint16_t);
             if((*datalength)<0)
                 return -1;
-            length2=DLT_ENDIAN_GET_16(msg->standardheader->htyp, length2_tmp);
+            length2=DLT_ENDIAN_GET_16(msg->standarddheader->htyp, length2_tmp);
             if((*datalength)<length2)
                 return -1;
             *ptr += length2;
@@ -3733,7 +3733,7 @@ int dlt_message_argument_print(DltMessage *msg,uint32_t type_info,uint8_t **ptr,
         DLT_MSG_READ_VALUE(length_tmp,*ptr,*datalength,uint16_t);
         if((*datalength)<0)
             return -1;
-        length=DLT_ENDIAN_GET_16(msg->standardheader->htyp, length_tmp);
+        length=DLT_ENDIAN_GET_16(msg->standarddheader->htyp, length_tmp);
         DLT_MSG_READ_STRING((text+strlen(text)),*ptr,*datalength,length);
         if((*datalength)<0)
             return -1;

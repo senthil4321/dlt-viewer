@@ -1212,7 +1212,7 @@ extern "C"
      * @param datalength pointer to datalength (datalength is changed within this function)
      * @param text pointer to a ASCII string, in which the output is written
      * @param textlength maximal size of text buffer
-     * @param byteLength If argument is a string, and this value is 0 or greater, this value willl be taken as string length
+     * @param byteLength If argument is a string, and this value is 0 or greater, this value will be taken as string length
      * @param verbose if set to true verbose information is printed out.
      * @return negative value if there was an error
      */

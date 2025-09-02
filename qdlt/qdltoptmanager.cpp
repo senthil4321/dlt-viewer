@@ -132,7 +132,7 @@ void QDltOptManager::parse(const QStringList& args)
     printVersion(args.at(0));
 
      /* the default parameter - exactly one parameter - should either be
-      * a dlt or a dlp file, so this enables the "doubleclick" feature
+      * a dlt or a dlp file, so this enables the "double-click" feature
       */
 
     if (m_parser.optionNames().isEmpty() && m_parser.positionalArguments().size() == 1)

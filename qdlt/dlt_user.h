@@ -97,7 +97,7 @@ typedef enum
  */
 typedef enum
 {
-    DLT_FORMAT_DEFAULT   =          0x00,   /**< no sepecial format */
+    DLT_FORMAT_DEFAULT   =          0x00,   /**< no special format */
     DLT_FORMAT_HEX8  =   		0x01, 	/**< Hex 8 */
     DLT_FORMAT_HEX16 =   		0x02, 	/**< Hex 16 */
     DLT_FORMAT_HEX32 =   		0x03, 	/**< Hex 32 */
@@ -220,7 +220,7 @@ typedef struct
 } DltUser;
 
 /**************************************************************************************************
-* The folowing API functions define a low level function interface for DLT
+* The following API functions define a low level function interface for DLT
 **************************************************************************************************/
 
 /**
@@ -342,7 +342,7 @@ int dlt_user_log_write_raw(DltContextData *log,void *data,uint16_t length);
 int dlt_user_trace_network(DltContext *handle, DltNetworkTraceType nw_trace_type, uint16_t header_len, void *header, uint16_t payload_len, void *payload);
 
 /**************************************************************************************************
-* The folowing API functions define a high level function interface for DLT
+* The following API functions define a high level function interface for DLT
 **************************************************************************************************/
 
 /**

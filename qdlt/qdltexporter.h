@@ -81,7 +81,7 @@ public:
      */
     void setFilterList(QDltFilterList &filterList);
 
-    /* Multifilter willl be used if set to export to separate file for each Filter
+    /* Multifilter will be used if set to export to separate file for each Filter
      * \param filterListmultifilterNames All filenames of the filters
      */
     void setMultifilterFilenames(QStringList multifilterFilenames);

@@ -117,7 +117,7 @@ void QDltFilter::clear()
     enableMarker = false;
     enableRegexSearchReplace = false;
 
-    filterColour = "#000000"; // QColor() default contructor initializes to an invalid color RGB 0,0,0
+    filterColour = "#000000"; // QColor() default constructor initializes to an invalid color RGB 0,0,0
     logLevelMax = 6;
     logLevelMin = 0;
     messageIdMax=0;
