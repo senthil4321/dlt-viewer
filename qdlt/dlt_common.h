@@ -34,7 +34,7 @@
 **                                                                            **
 **  REMARKS   :                                                               **
 **                                                                            **
-**  PLATFORM DEPENDANT [yes/no]: yes                                          **
+**  PLATFORM DEPENDENT [yes/no]: yes                                          **
 **                                                                            **
 **  TO BE CHANGED BY USER [yes/no]: no                                        **
 **                                                                            **
@@ -138,7 +138,7 @@ typedef unsigned int speed_t;
 #define DLT_BETOH_64(x) ((x))
 #define DLT_LETOH_64(x) DLT_SWAP_64((x))
 #else
-/* #warning "Litte Endian Architecture!" */
+/* #warning "Little Endian Architecture!" */
 #define DLT_HTOBE_16(x) DLT_SWAP_16((x))
 #define DLT_HTOLE_16(x) ((x))
 #define DLT_BETOH_16(x) DLT_SWAP_16((x))
@@ -242,8 +242,8 @@ typedef unsigned int speed_t;
 
  * Definitions of DLT message buffer overflow
  */
-#define DLT_MESSAGE_BUFFER_NO_OVERFLOW     0x00 /**< Buffer overflow has not occured */
-#define DLT_MESSAGE_BUFFER_OVERFLOW        0x01 /**< Buffer overflow has occured */
+#define DLT_MESSAGE_BUFFER_NO_OVERFLOW     0x00 /**< Buffer overflow has not occurred */
+#define DLT_MESSAGE_BUFFER_OVERFLOW        0x01 /**< Buffer overflow has occurred */
 
 /*
  * Definition of DLT output variants
@@ -340,7 +340,7 @@ typedef struct
  */
 typedef struct
 {
-    uint8_t htyp;           /**< This parameter contains several informations, see definitions below */
+    uint8_t htyp;           /**< This parameter contains several information, see definitions below */
     uint8_t mcnt;           /**< The message counter is increased with each sent DLT message */
     uint16_t len;           /**< Length of the complete message, without storage header */
 } PACKED DltStandardHeader;
@@ -373,14 +373,14 @@ typedef struct
  */
 typedef struct
 {
-    uint8_t msin;          /**< messsage info */
+    uint8_t msin;          /**< message info */
     uint8_t noar;          /**< number of arguments */
     char apid[DLT_ID_SIZE];          /**< application id */
     char ctid[DLT_ID_SIZE];          /**< context id */
 } PACKED DltExtendedHeader;
 
 /**
-* The sturcture of the Dltv2 base header
+* The structure of the Dltv2 base header
 */
 typedef struct dltv2baseheader
 {
@@ -390,7 +390,7 @@ typedef struct dltv2baseheader
 } PACKED Dltv2header;
 
 /**
-* The sturcture of the Dltv2 optional header
+* The structure of the Dltv2 optional header
 */
 typedef struct dltv2optionalheader
 {
@@ -399,7 +399,7 @@ typedef struct dltv2optionalheader
 } PACKED Dltv2optionalheader;
 
 /**
-* The sturcture of the Dltv2 extended header
+* The structure of the Dltv2 extended header
 */
 typedef struct dltv2extendedheader{
         uint8_t len;
@@ -498,26 +498,26 @@ typedef struct
 {
     uint32_t service_id;            /**< service ID */
     char com[DLT_ID_SIZE];                    /**< communication interface */
-    uint32_t max_bandwidth;         /**< maximum bandwith */
+    uint32_t max_bandwidth;         /**< maximum bandwidth */
 } PACKED DltServiceSetCommunicationMaximumBandwidth;
 
 typedef struct
 {
     uint32_t service_id;            /**< service ID */
-    uint8_t status;                 /**< reponse status */
+    uint8_t status;                 /**< response status */
 } PACKED DltServiceResponse;
 
 typedef struct
 {
     uint32_t service_id;            /**< service ID */
-    uint8_t status;                 /**< reponse status */
+    uint8_t status;                 /**< response status */
     uint8_t log_level;              /**< log level */
 } PACKED DltServiceGetDefaultLogLevelResponse;
 
 typedef struct
 {
     uint32_t service_id;            /**< service ID */
-    uint8_t status;                 /**< reponse status */
+    uint8_t status;                 /**< response status */
     uint8_t overflow;               /**< overflow status */
 } PACKED DltServiceMessageBufferOverflowResponse;
 
@@ -529,7 +529,7 @@ typedef struct
 typedef struct
 {
     uint32_t service_id;            /**< service ID */
-    uint8_t  status;                /**< reponse status */
+    uint8_t  status;                /**< response status */
     uint32_t length;                /**< length of following payload */
     /* char [] payload */
 } PACKED DltServiceGetSoftwareVersionResponse;
@@ -540,7 +540,7 @@ typedef struct
 typedef struct
 {
     uint32_t service_id;            /**< service ID */
-    uint8_t status;                 /**< reponse status */
+    uint8_t status;                 /**< response status */
     char apid[DLT_ID_SIZE];         /**< application id */
     char ctid[DLT_ID_SIZE];         /**< context id */
     char comid[DLT_ID_SIZE];        /**< communication interface */
@@ -552,7 +552,7 @@ typedef struct
 typedef struct
 {
     uint32_t service_id;            /**< service ID */
-    uint8_t status;                 /**< reponse status */
+    uint8_t status;                 /**< response status */
     uint8_t state;                  /**< new state */
     char comid[DLT_ID_SIZE];        /**< communication interface */
 } PACKED DltServiceConnectionInfo;
@@ -563,7 +563,7 @@ typedef struct
 typedef struct
 {
     uint32_t service_id;            /**< service ID */
-    uint8_t status;                 /**< reponse status */
+    uint8_t status;                 /**< response status */
     int32_t timezone;               /**< Timezone in seconds */
     uint8_t isdst;                  /**< Is daylight saving time */
 } PACKED DltServiceTimezone;
@@ -574,7 +574,7 @@ typedef struct
 typedef struct
 {
     uint32_t service_id;            /**< service ID */
-    uint8_t status;                 /**< reponse status */
+    uint8_t status;                 /**< response status */
 } PACKED DltServiceMarker;
 
 /**
@@ -1098,18 +1098,18 @@ extern "C"
     QDLT_C_EXPORT int dlt_ringbuffer_get_skip(DltRingBuffer *dltbuf);
 
     /**
-     * Helper function: Get free space in bytes for writting between write and read position
+     * Helper function: Get free space in bytes for writing between write and read position
      * @param dltbuf Pointer to ringbuffer structure
-     * @param freespace Free Space in bytes for writting is returned
+     * @param freespace Free Space in bytes for writing is returned
      * @return negative value if there was an error
      */
     QDLT_C_EXPORT int dlt_ringbuffer_freespacewrite(DltRingBuffer *dltbuf, uint32_t *freespace);
 
     /**
      * Helper function: Check free space and if necessary discard entries, so that at least
-     * reqspace bytes are available for writting
+     * reqspace bytes are available for writing
      * @param dltbuf Pointer to ringbuffer structure
-     * @param reqspace Requested space for writting in bytes
+     * @param reqspace Requested space for writing in bytes
      * @return negative value if there was an error
      */
     QDLT_C_EXPORT int dlt_ringbuffer_checkandfreespace(DltRingBuffer *dltbuf, uint32_t reqspace);

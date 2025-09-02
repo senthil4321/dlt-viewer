@@ -139,7 +139,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     if(!QDltOptManager::getInstance()->getConvertDestFile().isEmpty())
     {
-        switch ( QDltOptManager::getInstance()->get_convertionmode() )
+        switch ( QDltOptManager::getInstance()->get_conversionmode() )
         {
         case e_UTF8:
              commandLineConvertToUTF8();
@@ -169,7 +169,7 @@ MainWindow::MainWindow(QWidget *parent) :
     }
 
     /* auto connect */
-    if( (settings->autoConnect != 0) ) // in convertion mode we do not need any connection ...)
+    if( (settings->autoConnect != 0) ) // in conversion mode we do not need any connection ...)
     {
         connectAll();
     }
@@ -821,7 +821,7 @@ void MainWindow::initFileHandling()
                     // if dlt viewer started as converter or with plugin option load file non multithreaded
                     reloadLogFile(false,false);
                 else
-                    // normally load log file mutithreaded
+                    // normally load log file multithreaded
                     reloadLogFile();
                 outputfile.close(); // open later again when writing
             }
@@ -852,7 +852,7 @@ void MainWindow::initFileHandling()
             // if dlt viewer started as converter or with plugin option load file non multithreaded
             reloadLogFile(false,false);
         else
-            // normally load log file mutithreaded
+            // normally load log file multithreaded
             reloadLogFile();
     }
 
@@ -869,7 +869,7 @@ void MainWindow::initFileHandling()
             // if dlt viewer started as converter or with plugin option load file non multithreaded
             reloadLogFile(false,false);
         else
-            // normally load log file mutithreaded
+            // normally load log file multithreaded
             reloadLogFile();
     }
 }
@@ -1300,7 +1300,7 @@ bool MainWindow::openDltFile(QStringList fileNames)
             // if dlt viewer started as converter or with plugin option load file non multithreaded
             reloadLogFile(false,false);
         else
-            // normally load log file mutithreaded
+            // normally load log file multithreaded
             reloadLogFile();
         outputfile.close(); // open later again when writing
         ret = true;
@@ -1316,7 +1316,7 @@ bool MainWindow::openDltFile(QStringList fileNames)
                 // if dlt viewer started as converter or with plugin option load file non multithreaded
                 reloadLogFile(false,false);
             else
-                // normally load log file mutithreaded
+                // normally load log file multithreaded
                 reloadLogFile();
             outputfile.close(); // open later again when writing
             ret = true;
@@ -3702,8 +3702,8 @@ void MainWindow::connectECU(EcuItem* ecuitem,bool force)
 
 void MainWindow::connected()
 {
-    /* signal emited when connected to host */
-    /* find socket which emited signal */
+    /* signal emitted when connected to host */
+    /* find socket which emitted signal */
     //qDebug() << "Connected" << __LINE__ << __FILE__;
     for(int num = 0; num < project.ecu->topLevelItemCount (); num++)
     {
@@ -3732,7 +3732,7 @@ void MainWindow::checkConnectionState()
   bool oneConnected=false;
   bool oneTryConnect=false;
 
-  /* find socket which emited signal */
+  /* find socket which emitted signal */
   for(int num = 0; num < project.ecu->topLevelItemCount (); num++)
      {
        EcuItem *ecuitem = (EcuItem*)project.ecu->topLevelItem(num);
@@ -3785,8 +3785,8 @@ void MainWindow::checkConnectionState()
 
 void MainWindow::disconnected()
 {
-    /* signal emited when disconnected to host */
-    /* find socket which emited signal */
+    /* signal emitted when disconnected to host */
+    /* find socket which emitted signal */
     for(int num = 0; num < project.ecu->topLevelItemCount (); num++)
     {
         EcuItem *ecuitem = (EcuItem*)project.ecu->topLevelItem(num);
@@ -3872,9 +3872,9 @@ void MainWindow::timeout()
 
 void MainWindow::error(QAbstractSocket::SocketError /* socketError */)
 {
-    /* signal emited when connection to host is not possible */
+    /* signal emitted when connection to host is not possible */
     //qDebug() << "Socket error" << __LINE__ << __FILE__;
-    /* find socket which emited signal */
+    /* find socket which emitted signal */
     for(int num = 0; num < project.ecu->topLevelItemCount (); num++)
     {
         EcuItem *ecuitem = (EcuItem*)project.ecu->topLevelItem(num);
@@ -3900,12 +3900,12 @@ void MainWindow::error(QAbstractSocket::SocketError /* socketError */)
 
 void MainWindow::readyRead()
 {
-    /* signal emited when socket received data */
+    /* signal emitted when socket received data */
     //qDebug() << "readyRead" << __LINE__ << __FILE__;
     /* Delay reading, if indexer is working on the dlt file */
     if(true == dltIndexer->tryLock())
     {
-        /* find socket which emited signal */
+        /* find socket which emitted signal */
         for(int num = 0; num < project.ecu->topLevelItemCount (); num++)
         {
             EcuItem *ecuitem = (EcuItem*)project.ecu->topLevelItem(num);
@@ -5940,9 +5940,9 @@ void MainWindow::sendUpdates(EcuItem* ecuitem)
 }
 
 void MainWindow::stateChangedSerial(bool dsrChanged){
-    /* signal emited when connection state changed */
+    /* signal emitted when connection state changed */
 
-    /* find socket which emited signal */
+    /* find socket which emitted signal */
     for(int num = 0; num < project.ecu->topLevelItemCount (); num++)
     {
         EcuItem *ecuitem = (EcuItem*)project.ecu->topLevelItem(num);
@@ -5975,9 +5975,9 @@ void MainWindow::stateChangedSerial(bool dsrChanged){
 
 void MainWindow::stateChangedIP(QAbstractSocket::SocketState socketState)
 {
-    /* signal emited when connection state changed */
+    /* signal emitted when connection state changed */
     //qDebug() << "stateChangedIP" << socketState << __LINE__ << __FILE__;
-    /* find socket which emited signal */
+    /* find socket which emitted signal */
     for(int num = 0; num < project.ecu->topLevelItemCount (); num++)
     {
         EcuItem *ecuitem = (EcuItem*)project.ecu->topLevelItem(num);
@@ -6018,9 +6018,9 @@ void MainWindow::stateChangedIP(QAbstractSocket::SocketState socketState)
 /*
 void MainWindow::stateChangedUDP(QAbstractSocket::SocketState socketState)
 {
-    // signal emited when connection state changed
+    // signal emitted when connection state changed
     qDebug() << "stateChangedUDP" << socketState << __LINE__ << __FILE__;
-    // find socket which emited signal
+    // find socket which emitted signal
     for(int num = 0; num < project.ecu->topLevelItemCount (); num++)
     {
         EcuItem *ecuitem = (EcuItem*)project.ecu->topLevelItem(num);

@@ -14,7 +14,7 @@ QDltExporter::QDltExporter(QDltFile *from, QString outputfileName, QDltPluginMan
 {
     size = 0;
     starting_index=0;
-    stoping_index=0;
+    stopping_index=0;
     automaticTimeSettings=_automaticTimeSettings;
     utcOffset=_utcOffset;
     dst=_dst;
@@ -527,7 +527,7 @@ bool QDltExporter::exportMsg(unsigned long int num, QDltMsg &msg, QByteArray &bu
 void QDltExporter::exportMessageRange(unsigned long start, unsigned long stop)
 {
     this->starting_index=start;
-    this->stoping_index=stop;
+    this->stopping_index=stop;
 }
 
 void QDltExporter::setFilterList(QDltFilterList &filterList)
@@ -553,7 +553,7 @@ void QDltExporter::exportMessages()
     int startFinishError=0;
     clipboardString.clear();
     unsigned long int starting = 0;
-    unsigned long int stoping = this->size;
+    unsigned long int stopping = this->size;
 
     /* start export */
     if(false == startExport())
@@ -565,17 +565,17 @@ void QDltExporter::exportMessages()
 
     bool silentMode = !QDltOptManager::getInstance()->issilentMode();
 
-    if ( this->stoping_index == 0 || this->stoping_index > this->size || this->stoping_index < this->starting_index )
+    if ( this->stopping_index == 0 || this->stopping_index > this->size || this->stopping_index < this->starting_index )
     {
-        stoping = this->size;
+        stopping = this->size;
         starting = 0;
         qDebug() << "Start DLT export of" << this->size << "messages" << ",silent mode" << !silentMode;
     }
     else
     {
-        stoping = this->stoping_index;
+        stopping = this->stopping_index;
         starting = this->starting_index;
-        qDebug() << "Start DLT export" << stoping - starting << "messages" << "of" << this->size << "range: " << starting << "-" << stoping << ",silent mode" << !silentMode;
+        qDebug() << "Start DLT export" << stopping - starting << "messages" << "of" << this->size << "range: " << starting << "-" << stopping << ",silent mode" << !silentMode;
     }
 
     /* init fileprogress */
@@ -583,9 +583,9 @@ void QDltExporter::exportMessages()
     int progressCounter = 1;
     emit progress("Exp",1,0);
 
-    for(;starting<stoping;starting++)
+    for(;starting<stopping;starting++)
     {
-        int percent = (( starting * 100.0 ) /stoping );
+        int percent = (( starting * 100.0 ) /stopping );
         if(percent>=progressCounter)
         {
             progressCounter += 1;
@@ -678,9 +678,9 @@ void QDltExporter::exportMessages()
        }
        return;
     }
-    if ( stoping != 0 )
+    if ( stopping != 0 )
     {
-     percent=(( starting * 100.0 ) / stoping );
+     percent=(( starting * 100.0 ) / stopping );
     }
     else
     {

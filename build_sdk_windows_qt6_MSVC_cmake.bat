@@ -124,7 +124,7 @@ GOTO QUIT
 
 :ERROR_HANDLER
 echo ####################################
-echo ###       ERROR occured          ###
+echo ###       ERROR occurred          ###
 echo ####################################
 exit /b 1
 

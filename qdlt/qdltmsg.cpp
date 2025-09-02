@@ -286,7 +286,7 @@ quint32 QDltMsg::checkMsgSize(const char *data,quint32 size,bool supportDLTv2)
         withPrivacyLevel = htyp2 & 0x0400;
         withTags = htyp2 & 0x0200;
         withSourceFileNameLineNumber = htyp2 & 0x0100;
-        /* TODO: Endianess of payload not defined in DLTv2, undefined, set to LittleEndian by default */
+        /* TODO: Endianness of payload not defined in DLTv2, undefined, set to LittleEndian by default */
         endianness = QDlt::DltEndiannessLittleEndian;
 
         /* get Message Counter */
@@ -621,7 +621,7 @@ bool QDltMsg::setMsg(const QByteArray& buf, bool withStorageHeader,bool supportD
         withPrivacyLevel = htyp2 & 0x0400;
         withTags = htyp2 & 0x0200;
         withSourceFileNameLineNumber = htyp2 & 0x0100;
-        /* TODO: Endianess of payload not defined in DLTv2, undefined, set to LittleEndian by default */
+        /* TODO: Endianness of payload not defined in DLTv2, undefined, set to LittleEndian by default */
         endianness = QDlt::DltEndiannessLittleEndian;
 
         /* get Message Counter : always*/
@@ -957,7 +957,7 @@ bool QDltMsg::getMsg(QByteArray &buf,bool withStorageHeader) {
     }
 
     /* write standardheader */
-    standardheader.htyp = 0x01 << 5; /* intialise with version number 0x1 */
+    standardheader.htyp = 0x01 << 5; /* initialise with version number 0x1 */
     if(endianness == QDlt::DltEndiannessBigEndian) {
         standardheader.htyp |= DLT_HTYP_MSBF;
     }
@@ -1152,7 +1152,7 @@ QString QDltMsg::toStringPayload() const
         // ServiceID of Get ECU Software Version
         if(getCtrlServiceId() == DLT_SERVICE_ID_GET_SOFTWARE_VERSION)
         {
-            // Skip the ServiceID, Status and Lenght bytes and start from the String containing the ECU Software Version
+            // Skip the ServiceID, Status and Length bytes and start from the String containing the ECU Software Version
             data = payload.mid(9,(payload.size()>265)?256:(payload.size()-9));
             text += QDlt::toAscii(data,true);
         }
@@ -1225,7 +1225,7 @@ QString QDltMsg::toStringPayload() const
         }
         else if(segmentationFrameType==1)
         {
-            text += "Segmentation: Consectutive Frame number " + QString("%1").arg(segmentationConsecutiveFrame);
+            text += "Segmentation: Consecutive Frame number " + QString("%1").arg(segmentationConsecutiveFrame);
         }
         else if(segmentationFrameType==2)
         {
@@ -1516,7 +1516,7 @@ void QDltMsg::genMsg()
     header.clear();
 
     // write standardheader
-    standardheader.htyp = 0x01 << 5; /* intialise with version number 0x1 */
+    standardheader.htyp = 0x01 << 5; /* initialise with version number 0x1 */
     if(endianness == QDlt::DltEndiannessBigEndian) {
         standardheader.htyp |= DLT_HTYP_MSBF;
     }
