@@ -1484,7 +1484,7 @@
     <string>Find Previous</string>
    </property>
    <property name="toolTip">
-    <string>Search for previous occurance.</string>
+    <string>Search for previous occurrence.</string>
    </property>
   </action>
   <action name="actionFindNext">
@@ -1496,7 +1496,7 @@
     <string>Find Next</string>
    </property>
    <property name="toolTip">
-    <string>Search for next occurance.</string>
+    <string>Search for next occurrence.</string>
    </property>
   </action>
   <action name="actionSearchList">

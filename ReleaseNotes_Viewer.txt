@@ -58,7 +58,7 @@ Changes
 * Implement dlt split feature in commander
 * Mark and Jump To Messages (#629)
 * Improve Dark Mode Visibility of Scrollbar (#631)
-* Fixe performance issue with only tracing. (#633)
+* Fix performance issue with only tracing. (#633)
 * Included the shortcut to the context menu
 * Improve Settings Organisation
 * Update tablemodel.h
@@ -87,9 +87,9 @@ Changes
 * add fixes for mingw compatibility and free the console in additional places
 * c++17 flag not needed
 * add the freeWindowsConsole function
-* Remove inheritence of QDltMsg from QDlt
+* Remove inheritance of QDltMsg from QDlt
 * Remove unused vars from qdltimporter
-* Remove inheritence of QDltArgument from QDlt
+* Remove inheritance of QDltArgument from QDlt
 * Simplify code in qdltbase
 * Move constants from qdltbase to where they are needed
 * introduce separate header for C export rules
@@ -200,7 +200,7 @@ Changes
   Names of the signals changed between Qt 5.12 and 5.15,
   while we still need to maintain compatibility with 5.12
 * Keep console logging if app is launched from cmd (#528)
-* Increase precision of float ouput to 8 digits (#530)
+* Increase precision of float output to 8 digits (#530)
 * Bump action
 * Abi in MacOS artifacts
 * Replace search progress dialog with an in-place progress bar (#509)
@@ -267,7 +267,7 @@ Changes
 * Update build.sh
 * Fix more compilation warnings (#499)
 * fix warning in PluginTreeWidget
-  due to comaprison of ints with different signedness
+  due to comparison of ints with different signedness
 * fix warnings in DltImporter::dltIpcFromMF4
   comparison of integer expressions of different signedness
 * fix warnings in QDltMsg::checkMsgSize
@@ -298,7 +298,7 @@ Changes
     * silence warnings due to deprecated Qt settings
     * silence Qt6 KeyCombination deprecation warning
     * Fix filter active color. (#494)
-    * Fix Multifilter feature, expecially with older Qt version. (#493)
+    * Fix Multifilter feature, especially with older Qt version. (#493)
     * Switch to Qt 6.7.2
     * Enable Plugin when sending command line command to plugin. (#490)
     * Remove Windows Vista support. (#489)
@@ -414,7 +414,7 @@ Changes
     * Add filter shortcut
     * Improve speed of non verbose plugin Fibex loader (#386)
     * Fix non-monotonic timestamps under Windows
-    * Remove Linefeeds and Cariage Returns in CSV Export of ECUId, AppId and CtxId.
+    * Remove Linefeeds and Carriage Returns in CSV Export of ECUId, AppId and CtxId.
     * Fix also Timezone export for CSV and Jira
     * Fix to use configured timezone during export
     * Import from PCAP file
@@ -506,7 +506,7 @@ Changes
     * reset code changes for QT 5.12.12 compatible
     * code cleanup
     * reverted changes in src/cmake/Darwin.cmake file
-    * qmake build issue resolved by defining variable, removed QT5 specific checkes
+    * qmake build issue resolved by defining variable, removed QT5 specific checks
     * windows check added to check linux build failed
     * reverted last code changes
     * windows specific code changes
@@ -602,7 +602,7 @@ Changes
     * Fix crash when TCP connection stopped and Serial connection available (#207)
     * [Bugfix] Avoid error Message when cancelling open filter dialog (#204)
     * Add "Save IDs to csv" to config tab (#206)
-        to get a list of registered APID/CTID + description from a dlt log file and save it as comma seperated file
+        to get a list of registered APID/CTID + description from a dlt log file and save it as comma separated file
     * Count up version of filetransferplugin
     * Increased priority of manual markers (#195)
     * Remove using default filter index (#194)
@@ -660,7 +660,7 @@ Changes
 
 Features:
     * Fix table model colors
-    * Fix forground color issue in search table model
+    * Fix foreground color issue in search table model
     * Fix serial connect problem
     * Using better threshold for text color
         Improved the selection of the text color based on the background. Also

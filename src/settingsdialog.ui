@@ -861,7 +861,7 @@
          </rect>
         </property>
         <property name="toolTip">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If this chechbox is enabled the last ECU connected is tried to be connected automatically.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If this checkbox is enabled the last ECU connected is tried to be connected automatically.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
         <property name="text">
          <string>Auto connect to ECUs at start</string>

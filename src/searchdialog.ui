@@ -138,7 +138,7 @@
       </size>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Look for all hits and show all the search results in the search results window. If disabled the single step search is active. Navigate through the serach results by next / previous buttons.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Look for all hits and show all the search results in the search results window. If disabled the single step search is active. Navigate through the search results by next / previous buttons.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="text">
       <string>Find All</string>
