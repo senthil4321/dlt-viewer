@@ -5,7 +5,7 @@ Branch: feature/web-ui-python-bridge-mvp
 
 ## Status
 
-Implementation started. Initial Python bridge scaffold is in place and runnable.
+Implementation in progress. Python bridge now includes a runnable session lifecycle API and WebSocket state events.
 
 ## Completed
 
@@ -15,8 +15,15 @@ Implementation started. Initial Python bridge scaffold is in place and runnable.
 4. Implemented endpoints:
    - `GET /health`
    - `GET /version`
+   - `POST /sessions`
+   - `GET /sessions`
+   - `GET /sessions/{session_id}`
+   - `POST /sessions/{session_id}/connect`
+   - `POST /sessions/{session_id}/disconnect`
    - `WS /stream/{session_id}` with heartbeat stream.
 5. Added environment-driven settings and typed response/event models.
+6. Added in-memory session registry service.
+7. Added WebSocket `connection_state` broadcast on connect/disconnect actions.
 
 ## Files Added This Checkpoint
 
@@ -29,6 +36,8 @@ Implementation started. Initial Python bridge scaffold is in place and runnable.
 - `webbridge/app/models.py`
 - `webbridge/app/main.py`
 - `webbridge/app/services/session_manager.py`
+- `webbridge/app/services/session_registry.py`
+- `webbridge/.gitignore`
 
 ## How To Resume Later
 
@@ -43,17 +52,20 @@ Implementation started. Initial Python bridge scaffold is in place and runnable.
 3. Verify APIs:
    - `GET /health`
    - `GET /version`
-   - Connect `ws://127.0.0.1:8008/stream/demo-session`
+   - `POST /sessions`
+   - Connect `ws://127.0.0.1:8008/stream/<session_id>`
+   - `POST /sessions/<session_id>/connect`
+   - `POST /sessions/<session_id>/disconnect`
 
 ## Next Tasks (Priority)
 
-1. Add session lifecycle REST API and in-memory session registry.
-2. Implement TCP client ingestion manager with reconnect logic.
-3. Implement UDP listener/multicast ingestion manager.
+1. Implement real TCP client ingestion manager with reconnect logic.
+2. Implement UDP listener/multicast ingestion manager.
+3. Wire ingestion events to WebSocket (`message`, `stats`, `error`).
 4. Define and enforce message event schema parity with desktop semantics.
-5. Add basic tests for health/version and websocket heartbeat.
+5. Add tests for session APIs and WebSocket event behavior.
 
 ## Notes
 
 - Current WebSocket behavior emits heartbeat frames and keeps the connection alive.
-- Data ingestion from ECU sockets is not implemented yet in this checkpoint.
+- Session connect/disconnect is currently stateful API behavior; ECU socket ingestion is not implemented yet.

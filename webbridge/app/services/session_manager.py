@@ -30,14 +30,21 @@ class SessionManager:
         settings = get_settings()
         while True:
             await asyncio.sleep(settings.heartbeat_interval_sec)
-            seq = self._next_seq(session_id)
-            event = EventEnvelope(
-                type="heartbeat",
+            await self.broadcast_event(
                 session_id=session_id,
-                seq=seq,
+                event_type="heartbeat",
                 payload={"message": "alive"},
             )
-            await self._broadcast(session_id, event.model_dump(mode="json"))
+
+    async def broadcast_event(self, session_id: str, event_type: str, payload: dict) -> None:
+        seq = self._next_seq(session_id)
+        event = EventEnvelope(
+            type=event_type,
+            session_id=session_id,
+            seq=seq,
+            payload=payload,
+        )
+        await self._broadcast(session_id, event.model_dump(mode="json"))
 
     async def _broadcast(self, session_id: str, event: dict) -> None:
         dead: list[WebSocket] = []
