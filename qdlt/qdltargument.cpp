@@ -290,6 +290,7 @@ bool QDltArgument::getArgument(QByteArray &payload, bool verboseMode) const
 {
     unsigned int dltType = 0;
     bool appendSize = false;
+    bool isStringType = false;
 
     /* add the type info in verbose mode */
     if(verboseMode) {
@@ -300,11 +301,13 @@ bool QDltArgument::getArgument(QByteArray &payload, bool verboseMode) const
             dltType |= DLT_TYPE_INFO_STRG;
             dltType |= DLT_SCOD_ASCII;
             appendSize = true;
+            isStringType = true;
             break;
         case DltTypeInfoUtf8:
             dltType |= DLT_TYPE_INFO_STRG;
             dltType |= DLT_SCOD_UTF8;
             appendSize = true;
+            isStringType = true;
             break;
         case DltTypeInfoBool:
             dltType |= DLT_TYPE_INFO_BOOL;
@@ -355,8 +358,21 @@ bool QDltArgument::getArgument(QByteArray &payload, bool verboseMode) const
 
     /* add the string or raw data size to the payload */
     if(appendSize) {
-        ushort size = data.size();
-        payload += QByteArray((const char*)&size, sizeof(ushort));
+        if (isStringType) {
+            // For strings, include a terminating '\0' in the encoded data and
+            // reflect this in the length field. This matches common DLT
+            // encoder behavior and avoids off-by-one issues when decoding
+            // the last character back from a stored DLT file.
+            QByteArray encoded = data;
+            encoded.append('\0');
+            ushort size = encoded.size();
+            payload += QByteArray((const char*)&size, sizeof(ushort));
+            payload += encoded;
+            return true;
+        } else {
+            ushort size = data.size();
+            payload += QByteArray((const char*)&size, sizeof(ushort));
+        }
     }
 
     /* add the value to the payload */
@@ -633,17 +649,24 @@ bool QDltArgument::setValue(QVariant value, bool verboseMode)
 
     endianness = QDlt::DltEndiannessLittleEndian;
 
-    switch(value.type())
+    int valueType = 0;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    valueType = value.typeId();
+#else
+    valueType = value.userType();
+#endif
+
+    switch(valueType)
     {
-    case QVariant::ByteArray:
+    case QMetaType::QByteArray:
         data = value.toByteArray();
         typeInfo = QDltArgument::DltTypeInfoRawd;
         return true;
-    case QVariant::String:
+    case QMetaType::QString:
         data = value.toByteArray();
         typeInfo = QDltArgument::DltTypeInfoUtf8; // treat all strings as UTF-8 encoded
         return true;
-    case QVariant::Bool:
+    case QMetaType::Bool:
         {
         bool bvalue = value.toBool();
         unsigned char cvalue = bvalue;
@@ -651,43 +674,41 @@ bool QDltArgument::setValue(QVariant value, bool verboseMode)
         typeInfo = QDltArgument::DltTypeInfoSInt;
         return true;
         }
-        break;
-    case QVariant::Int:
+    case QMetaType::Int:
         {
         int bvalue = value.toInt();
         data = QByteArray((const char*)&bvalue,sizeof(int));
         typeInfo = QDltArgument::DltTypeInfoSInt;
         return true;
         }
-    case QVariant::LongLong:
+    case QMetaType::LongLong:
         {
         long long bvalue = value.toLongLong();
         data = QByteArray((const char*)&bvalue,sizeof(long long));
         typeInfo = QDltArgument::DltTypeInfoSInt;
         return true;
         }
-    case QVariant::UInt:
+    case QMetaType::UInt:
         {
         unsigned int bvalue = value.toUInt();
         data = QByteArray((const char*)&bvalue,sizeof(int));
         typeInfo = QDltArgument::DltTypeInfoUInt;
         return true;
         }
-    case QVariant::ULongLong:
+    case QMetaType::ULongLong:
         {
         unsigned long long bvalue = value.toULongLong();
         data = QByteArray((const char*)&bvalue,sizeof(unsigned long long));
         typeInfo = QDltArgument::DltTypeInfoUInt;
         return true;
         }
-    case QVariant::Double:
+    case QMetaType::Double:
         {
-        double bvalue = value.toInt();
+        double bvalue = value.toDouble();
         data = QByteArray((const char*)&bvalue,sizeof(double));
         typeInfo = QDltArgument::DltTypeInfoFloa;
         return true;
         }
-        break;
     default:
         break;
     }

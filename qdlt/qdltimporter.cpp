@@ -1,6 +1,7 @@
 #include <QFile>
 #include <QDebug>
 #include <QtEndian>
+#include <QString>
 
 extern "C" {
     #include "dlt_common.h"
@@ -9,6 +10,7 @@ extern "C" {
 #include "qdltmsg.h"
 #include "qdltimporter.h"
 
+#include <chrono>
 #include <time.h>
 
 QDltImporter::QDltImporter(QFile *outputfile, QStringList fileNames, QObject *parent) :
@@ -16,6 +18,7 @@ QDltImporter::QDltImporter(QFile *outputfile, QStringList fileNames, QObject *pa
 {
     this->outputfile = outputfile;
     this->fileNames = fileNames;
+    setPcapPorts(QString("3490 3489 49362"));
 }
 
 QDltImporter::QDltImporter(QFile *outputfile, QString fileName,QObject *parent) :
@@ -23,6 +26,7 @@ QDltImporter::QDltImporter(QFile *outputfile, QString fileName,QObject *parent) 
 {
     this->outputfile = outputfile;
     fileNames.append(fileName);
+    setPcapPorts(QString("3490 3489 49362"));
 }
 
 QDltImporter::~QDltImporter()
@@ -803,13 +807,12 @@ DltStorageHeader QDltImporter::makeDltStorageHeader(std::optional<DltStorageHead
         result.seconds = static_cast<time_t>(ts->sec);
         result.microseconds = static_cast<int32_t>(ts->usec);
     } else {
-        if (struct timespec ts; timespec_get(&ts, TIME_UTC)) {
-            result.seconds = static_cast<uint32_t>(ts.tv_sec);
-            result.microseconds = static_cast<int32_t>(ts.tv_nsec / 1000);
-        } else {
-            result.seconds = 0;
-            result.microseconds = 0;
-        }
+        const auto now = std::chrono::system_clock::now().time_since_epoch();
+        const auto seconds = std::chrono::duration_cast<std::chrono::seconds>(now);
+        const auto microseconds = std::chrono::duration_cast<std::chrono::microseconds>(now - seconds);
+
+        result.seconds = static_cast<time_t>(seconds.count());
+        result.microseconds = static_cast<int32_t>(microseconds.count());
     }
 
     return result;
@@ -1189,7 +1192,7 @@ bool QDltImporter::dltFromEthernetFrame(QByteArray &record,int pos,quint16 ether
                    return false;
                }
                quint16 destPort = (((quint16)record.at(pos))<<8)|((quint16)(record.at(pos+1)&0xff));
-               if(destPort==3490||destPort==3489)
+               if(pcapPorts.contains(destPort))
                {
                    pos+=6;
                    dltFrame(record,pos,sec,usec);
@@ -1210,7 +1213,7 @@ bool QDltImporter::dltFromEthernetFrame(QByteArray &record,int pos,quint16 ether
                        return false;
                    }
                    quint16 destPort = (((quint16)segmentBufferUDP.at(pos))<<8)|((quint16)(segmentBufferUDP.at(pos+1)&0xff));
-                   if(destPort==3490||destPort==3489)
+                   if(pcapPorts.contains(destPort))
                    {
                        pos+=6;
                        dltFrame(segmentBufferUDP,pos,sec,usec);
@@ -1240,3 +1243,15 @@ void QDltImporter::writeDLTMessageToFile(QByteArray &bufferHeader,char* bufferPa
     outputfile->write(bufferHeader);
     outputfile->write(bufferPayload,bufferPayloadSize);
 }
+
+void QDltImporter::setPcapPorts(const QString &importPcapPorts)
+{
+    pcapPorts.clear();
+    QStringList portList = importPcapPorts.split(' ');
+
+    for (const QString& item : portList) {
+        if(item.toUShort()!=0)
+            pcapPorts.append(item.toUShort());
+    }
+}
+

@@ -65,7 +65,6 @@ QString toString(const Split& split) {
 
 OptManager::OptManager()
 {
-    project = false;
     log = false;
     convert = false;
     filter = false;
@@ -100,10 +99,10 @@ void OptManager::printUsage()
 {
     QString executable;
 #if (WIN32)
-    qDebug()<<"\nUsage:\n\n dlt-commander.exe [OPTIONS] [logfile] [projectfile] [filterfile] [mf4file] [pcapfile]";
+    qDebug()<<"\nUsage:\n\n dlt-commander.exe [OPTIONS] [logfile] [filterfile] [mf4file] [pcapfile]";
     executable = " dlt-commander.exe";
 #else
-    qDebug()<<"\nUsage:\n\n dlt-commander [OPTIONS] [logfile] [projectfile] [filterfile] [mf4file] [pcapfile]";
+    qDebug()<<"\nUsage:\n\n dlt-commander [OPTIONS] [logfile] [filterfile] [mf4file] [pcapfile]";
     executable = " dlt-commander";
 #endif
 
@@ -118,8 +117,10 @@ void OptManager::printUsage()
     qDebug()<<" -u\tConversion will be done in UTF8 instead of ASCII";
     qDebug()<<" -csv\tConversion will be done in CSV format";
     qDebug()<<" -d\tConversion will NOT be done, save in dlt file format again instead";
+    qDebug()<<" -dd\tConversion will NOT be done, save as decoded messages in dlt format";
     qDebug()<<" -delimiter <character>\tThe used delimiter for CSV export (Default: "+QString(QDLT_DEFAULT_EXPORT_DELIMITER)+").";
     qDebug()<<" -signature <string>\tThe used signature for CSV export, which columns are exported (Default: "+QString(QDLT_DEFAULT_EXPORT_SIGNATURE)+").  I=Index,T=Time,S=Timestamp,O=Count,E=Ecuid,A=Apid,C=Ctid,N=SessionId,Y=Type,U=Subtype,M=Mode,R=#Args,P=Payload";
+    qDebug()<<" -b \"Plugin|command|param1|..|paramN\"\tExecute a plugin command before loading log file (same syntax as dlt-viewer).";
     qDebug()<<" -split <size>\t Output file size limit given in Kb, Mb or Gb (Default: infinity).";
     qDebug()<<" -multifilter\tMultifilter will generate a separate export file with the name of the filter.";
     qDebug()<<"             \t-c will define the folder name, not the filename.";
@@ -217,6 +218,10 @@ void OptManager::parse(QStringList *opt)
             qDebug() << "Convert to CSV";
 
             convertionmode = e_CSV;
+        } else if (str.compare("-dd") == 0) {
+            qDebug() << "Convert to decoded DLT";
+
+            convertionmode = e_DDLT;
         } else if (str.compare("-multifilter") == 0) {
             qDebug() << "Multifilter export selected.";
 
@@ -232,6 +237,13 @@ void OptManager::parse(QStringList *opt)
         } else if (opt->at(i).endsWith(".dlf") || opt->at(i).endsWith(".DLF")) {
             filterFiles += QString("%1").arg(opt->at(i));
             qDebug()<< "Filter filename:" << QString("%1").arg(opt->at(i));
+        } else if (str.compare("-b") == 0) {
+            // pre plugin command, syntax: "Plugin|command|param1|..|paramN"
+            const QString cmd = opt->value(i + 1);
+            prePluginCommands += cmd;
+            qDebug() << "Pre plugin command:" << cmd;
+
+            i += 1;
         } else if (opt->at(i).endsWith(".pcap") || opt->at(i).endsWith(".PCAP")) {
             const QString pcapFile = QString("%1").arg(opt->at(i));
             pcapFiles += pcapFile;
@@ -274,4 +286,9 @@ std::size_t Split::toBytesCount() const
     default:
         return size;
     }
+}
+
+const QStringList &OptManager::getPrePluginCommands() const
+{
+    return prePluginCommands;
 }

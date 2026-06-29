@@ -7,6 +7,8 @@
 #include <QMainWindow>
 #include <QPair>
 #include <QMutex>
+#include <QMap>
+#include <atomic>
 
 #include "qdltdefaultfilter.h"
 #include "qdltfile.h"
@@ -130,6 +132,10 @@ public:
     QVector<qint64> getIndexFilters() { return indexFilterList; }
     const QList<int>& getGetLogInfoList() { return getLogInfoList; }
 
+    QMap<QString, int> getMarkerCounts() const;
+    void addMarkerCount(const QString &filterName);
+    void recomputeMarkerCounts(const QDltFilterList &filterList, const QVector<qint64> &indices);
+
     // let worker thread append to getLogInfoList
     void appendToGetLogInfoList(int value);
 
@@ -168,8 +174,8 @@ private:
     // DefaultFilter to be used
     QDltDefaultFilter *defaultFilter;
 
-    // stop flag
-    bool stopFlag;
+    // Atomic because stop() updates this from another thread while the indexer worker reads it.
+    std::atomic<bool> stopFlag;
 
     // active plugins
     QList<QDltPlugin*> activeViewerPlugins;
@@ -211,6 +217,12 @@ private:
     qint64 filterIndexStart;
     qint64 filterIndexEnd;
 
+    mutable QMutex markerCountLock;
+    QMap<QString, int> markerCounts;
+
+    void resetMarkerCounts(const QDltFilterList &filterList);
+    void computeMarkerCountsFromIndex(const QDltFilterList &filterList, const QVector<qint64> &indices);
+
 signals:
 
     // the maximum progress value
@@ -239,6 +251,10 @@ signals:
 
     // complete index creation of default filter finished
     void finishDefaultFilter();
+
+    //signal for progress bar while displaying marked message count
+    void markerCountProgressMax(int max);
+    void markerCountProgressValue(int value);
 
 public slots:
 

@@ -38,6 +38,8 @@ add_executable(dlt-viewer
     settingsdialog.cpp
     injectiondialog.h
     injectiondialog.cpp
+    feedbacksubmission.h
+    feedbacksubmission.cpp
     searchdialog.h
     searchdialog.cpp
     multiplecontextdialog.h
@@ -78,16 +80,41 @@ add_executable(dlt-viewer
     searchform.cpp
     filtergrouplogs.h
     filtergrouplogs.cpp
+    crlffilterwindow.h
+    crlffilterwindow.cpp
     ${UI_RESOURCES_RCC}
     resources/dlt_viewer.rc
     ecutree.h
     ecutree.cpp
+    fileexplorertab.ui
+    fileexplorertab.h
+    fileexplorertab.cpp
+    applicationdialog.ui
+    contextdialog.ui
+    ecudialog.ui
+    exporterdialog.ui
+    fileexplorertab.ui
+    filterdialog.ui
+    injectiondialog.ui
+    jumptodialog.ui
+    mainwindow.ui
+    multiplecontextdialog.ui
+    plugindialog.ui
+
+    searchform.ui
+    settingsdialog.ui
+    searchdialog.ui
+    updatechecker.h
+    updatechecker.cpp
+    filespliting.cpp
+    filespliting.h
 )
 
 target_link_libraries(dlt-viewer
     qdlt
     ${QT_PREFIX}::Core
     ${QT_PREFIX}::Network
+    ${QT_PREFIX}::Concurrent
     ${QT_PREFIX}::Widgets
     ${QT_PREFIX}::SerialPort)
 
@@ -100,6 +127,15 @@ endif()
 set_target_properties(dlt-viewer PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
     INSTALL_RPATH "$<$<BOOL:${LINUX}>:$ORIGIN/../lib;>$<$<BOOL:${APPLE}>:@loader_path/../Frameworks;>$<$<BOOL:${DLT_USE_QT_RPATH}>:${DLT_QT_LIB_DIR}>")
+
+if(WIN32)
+    add_custom_command(TARGET dlt-viewer POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            $<TARGET_FILE:qdlt>
+            ${CMAKE_BINARY_DIR}/bin
+        COMMENT "Copying libqdlt.dll to bin/"
+    )
+endif()
 
     install(TARGETS dlt-viewer
     DESTINATION "${DLT_EXECUTABLE_INSTALLATION_PATH}"

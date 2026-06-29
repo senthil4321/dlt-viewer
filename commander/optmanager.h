@@ -30,6 +30,7 @@ enum e_convertionmode
     e_UTF8 = 1,
     e_DLT  = 2,
     e_CSV  = 3,
+    e_DDLT = 4,
 };
 
 enum class Units {
@@ -71,11 +72,12 @@ public:
     const std::optional<Split>& getSplit() const;
     QString getSignature() const;
 
+    const QStringList &getPrePluginCommands() const;
+
     const QStringList &getPcapFiles() const;
     const QStringList &getMf4Files() const;
 
 private:
-    bool project;
     bool log;
     bool filter;
     bool convert;
@@ -89,6 +91,7 @@ private:
     QStringList pcapFiles;
     QStringList mf4Files;
     QStringList filterFiles;
+    QStringList prePluginCommands;
     QString convertSourceFile;
     QString convertDestFile;
     char delimiter;
