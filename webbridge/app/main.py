@@ -6,11 +6,20 @@ from pathlib import Path
 
 from .config import get_settings
 from .ingestion.ingestion_manager import ingestion_manager
+from .ingestion.tcp_client import TcpIngestionClient
+from .ingestion.control_messages import (
+    build_set_log_level_request,
+    build_get_log_info_request,
+    build_set_verbose_mode_request,
+)
 from .models import (
+    ControlOperationResponse,
     HealthResponse,
     SessionActionResponse,
     SessionCreateRequest,
     SessionInfo,
+    SetLogLevelRequest,
+    SetVerboseModeRequest,
     VersionResponse,
 )
 from .services.session_manager import session_manager
@@ -158,6 +167,130 @@ async def disconnect_session(session_id: str) -> SessionActionResponse:
         state="disconnected",
         message="Ingestion stopped and session marked disconnected.",
     )
+
+
+# ---------------------------------------------------------------------------
+# Control Operations
+# ---------------------------------------------------------------------------
+
+@app.post("/sessions/{session_id}/control/set-log-level", response_model=ControlOperationResponse)
+async def set_log_level(session_id: str, request: SetLogLevelRequest) -> ControlOperationResponse:
+    """Send a SET_LOG_LEVEL control message to the ECU.
+    
+    This allows changing the log level of a specific application context
+    on the remote ECU without disconnecting.
+    """
+    session = session_registry.get(session_id)
+    if session is None:
+        raise HTTPException(status_code=404, detail="Session not found")
+    
+    if session.state != "connected":
+        raise HTTPException(
+            status_code=409,
+            detail=f"Cannot send control message: session is {session.state}, not connected"
+        )
+    
+    # Build the control message
+    control_msg = build_set_log_level_request(
+        apid=request.apid,
+        ctid=request.ctid,
+        log_level=request.log_level,
+    )
+    
+    # Get the TCP client for this session
+    worker = ingestion_manager._workers.get(session_id)
+    if not isinstance(worker, TcpIngestionClient):
+        raise HTTPException(
+            status_code=409,
+            detail="Control operations only supported for TCP transport"
+        )
+    
+    # Send the control message
+    try:
+        await worker._send_control_message(control_msg)
+        return ControlOperationResponse(
+            session_id=session_id,
+            status="sent",
+            message=f"SET_LOG_LEVEL sent to {request.apid}/{request.ctid} (level={request.log_level})",
+            operation="set_log_level",
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to send control message: {e}"
+        )
+
+
+@app.post("/sessions/{session_id}/control/set-verbose-mode", response_model=ControlOperationResponse)
+async def set_verbose_mode(session_id: str, request: SetVerboseModeRequest) -> ControlOperationResponse:
+    """Send a SET_VERBOSE_MODE control message to the ECU."""
+    session = session_registry.get(session_id)
+    if session is None:
+        raise HTTPException(status_code=404, detail="Session not found")
+    
+    if session.state != "connected":
+        raise HTTPException(
+            status_code=409,
+            detail=f"Cannot send control message: session is {session.state}, not connected"
+        )
+    
+    control_msg = build_set_verbose_mode_request(
+        apid=request.apid,
+        ctid=request.ctid,
+        verbose=request.verbose,
+    )
+    
+    worker = ingestion_manager._workers.get(session_id)
+    if not isinstance(worker, TcpIngestionClient):
+        raise HTTPException(
+            status_code=409,
+            detail="Control operations only supported for TCP transport"
+        )
+    
+    try:
+        await worker._send_control_message(control_msg)
+        return ControlOperationResponse(
+            session_id=session_id,
+            status="sent",
+            message=f"SET_VERBOSE_MODE sent to {request.apid}/{request.ctid} (verbose={request.verbose})",
+            operation="set_verbose_mode",
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to send control message: {e}"
+        )
+
+
+@app.get("/sessions/{session_id}/control/supported-operations")
+async def get_supported_operations(session_id: str):
+    """Get list of control operations supported for this session."""
+    session = session_registry.get(session_id)
+    if session is None:
+        raise HTTPException(status_code=404, detail="Session not found")
+    
+    operations = {
+        "tcp": [
+            {
+                "name": "set_log_level",
+                "endpoint": f"/sessions/{session_id}/control/set-log-level",
+                "description": "Set log level for application/context",
+                "parameters": ["apid", "ctid", "log_level"]
+            },
+            {
+                "name": "set_verbose_mode",
+                "endpoint": f"/sessions/{session_id}/control/set-verbose-mode",
+                "description": "Enable/disable verbose mode",
+                "parameters": ["apid", "ctid", "verbose"]
+            }
+        ],
+        "udp": []
+    }
+    
+    return {
+        "transport": session.transport,
+        "operations": operations.get(session.transport, [])
+    }
 
 
 # ---------------------------------------------------------------------------

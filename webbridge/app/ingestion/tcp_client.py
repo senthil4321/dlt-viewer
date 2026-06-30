@@ -49,6 +49,8 @@ class TcpIngestionClient:
         self._on_state   = on_state
         self._stop_event = asyncio.Event()
         self._task: asyncio.Task | None = None
+        self._writer: asyncio.StreamWriter | None = None
+        self._writer_lock = asyncio.Lock()
 
     # ------------------------------------------------------------------
     # Public interface
@@ -71,6 +73,15 @@ class TcpIngestionClient:
             except asyncio.CancelledError:
                 pass
             self._task = None
+
+    async def _send_control_message(self, message: bytes) -> None:
+        """Send a control message (e.g., SET_LOG_LEVEL) to the ECU."""
+        async with self._writer_lock:
+            if self._writer is None:
+                raise RuntimeError("Not connected")
+            self._writer.write(message)
+            await self._writer.drain()
+            log.info("TCP [%s] sent control message (%d bytes)", self.session_id, len(message))
 
     # ------------------------------------------------------------------
     # Internal implementation
@@ -105,8 +116,13 @@ class TcpIngestionClient:
         log.info("TCP [%s] connecting → %s:%d", self.session_id, self.host, self.port)
         await self._on_state(self.session_id, "connecting", None)
 
+    async def _connect_and_read(self) -> None:
+        log.info("TCP [%s] connecting → %s:%d", self.session_id, self.host, self.port)
+        await self._on_state(self.session_id, "connecting", None)
+
         reader, writer = await asyncio.open_connection(self.host, self.port)
         try:
+            self._writer = writer  # Store for control message sending
             log.info("TCP [%s] connected", self.session_id)
             await self._on_state(self.session_id, "connected", None)
 
@@ -120,6 +136,7 @@ class TcpIngestionClient:
                 for msg in msgs:
                     await self._on_message(self.session_id, msg)
         finally:
+            self._writer = None
             writer.close()
             try:
                 await writer.wait_closed()

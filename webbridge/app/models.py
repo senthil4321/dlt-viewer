@@ -90,3 +90,34 @@ class ErrorPayload(BaseModel):
 
     code:    str
     detail:  str
+
+
+# ---------------------------------------------------------------------------
+# Control Operations
+# ---------------------------------------------------------------------------
+
+class SetLogLevelRequest(BaseModel):
+    """Request to set log level for an application context."""
+    
+    apid: str = Field(min_length=1, max_length=4, description="Application ID")
+    ctid: str = Field(min_length=1, max_length=4, description="Context ID")
+    log_level: Literal[1, 2, 3, 4, 5, 6] = Field(
+        description="Log level: 1=fatal, 2=error, 3=warn, 4=info, 5=debug, 6=verbose"
+    )
+
+
+class SetVerboseModeRequest(BaseModel):
+    """Request to enable/disable verbose mode."""
+    
+    apid: str = Field(min_length=1, max_length=4)
+    ctid: str = Field(min_length=1, max_length=4)
+    verbose: bool = Field(description="True to enable verbose mode, False to disable")
+
+
+class ControlOperationResponse(BaseModel):
+    """Response from a control operation."""
+    
+    session_id: str
+    status: Literal["sent", "acknowledged", "error"]
+    message: str
+    operation: str

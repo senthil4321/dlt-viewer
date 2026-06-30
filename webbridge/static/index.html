@@ -521,6 +521,21 @@
                 <button class="ghost-button" onclick="closeDrawer()">Close</button>
             </div>
             <div class="detail-grid" id="detailGrid"></div>
+            <div id="controlOpsPanel" style="margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--panel-border); display:none;">
+                <h3 style="margin: 0 0 12px 0; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.1em;">Control Operations</h3>
+                <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                    <input type="number" id="controlLogLevel" min="1" max="6" value="4" placeholder="Log level" style="width:80px;">
+                    <button onclick="sendControlSetLogLevel()" class="action-button">Set Log Level</button>
+                </div>
+                <div style="display:flex; gap:8px; margin-top:8px; flex-wrap:wrap;">
+                    <label style="display:flex; align-items:center; gap:8px;">
+                        <input type="checkbox" id="controlVerbose">
+                        <span>Verbose Mode</span>
+                    </label>
+                    <button onclick="sendControlSetVerboseMode()" class="action-button">Apply</button>
+                </div>
+                <p id="controlStatus" style="color:var(--muted); font-size:0.9rem; margin-top:8px;"></p>
+            </div>
         </aside>
     </div>
 
@@ -725,6 +740,9 @@
             });
             const m = filtered[index];
             
+            // Store selected message for control ops
+            window.selectedMsg = m;
+            
             document.getElementById('drawerTitle').textContent = `${m.apid}/${m.ctid}`;
             document.getElementById('detailGrid').innerHTML = `
                 <div><dt>ECU</dt><dd>${m.ecu_id}</dd></div>
@@ -736,12 +754,23 @@
                 <div><dt>Payload</dt><dd style="white-space:pre-wrap; line-height:1.6;">${m.payload_text}</dd></div>
                 ${m.decode_error ? `<div><dt>Decode error</dt><dd>${m.decode_error}</dd></div>` : ''}
             `;
+            
+            // Show control ops panel if session is connected and TCP
+            const sessions = Object.values(window.sessions || {});
+            const connectedSession = sessions.find(s => s.id === window.currentSessionId);
+            if (connectedSession && connectedSession.state === 'connected' && connectedSession.transport === 'tcp') {
+                document.getElementById('controlOpsPanel').style.display = 'block';
+            } else {
+                document.getElementById('controlOpsPanel').style.display = 'none';
+            }
+            
             document.getElementById('drawer').classList.add('open');
             renderLogs();
         }
 
         function closeDrawer() {
             selectedMessage = null;
+            window.selectedMsg = null;
             document.getElementById('drawer').classList.remove('open');
             renderLogs();
         }
@@ -749,6 +778,78 @@
         // Event listeners
         document.getElementById('searchText').addEventListener('input', renderLogs);
         document.getElementById('levelFilter').addEventListener('change', renderLogs);
+
+        // Control Operations Functions
+        async function sendControlSetLogLevel() {
+            if (!window.selectedMsg || !window.currentSessionId) {
+                document.getElementById('controlStatus').textContent = 'Error: No message selected or session not active';
+                return;
+            }
+            
+            const logLevel = parseInt(document.getElementById('controlLogLevel').value);
+            if (!logLevel || logLevel < 1 || logLevel > 6) {
+                document.getElementById('controlStatus').textContent = 'Error: Log level must be 1-6';
+                return;
+            }
+            
+            document.getElementById('controlStatus').textContent = 'Sending...';
+            
+            try {
+                const response = await fetch(`/sessions/${window.currentSessionId}/control/set-log-level`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        apid: window.selectedMsg.apid,
+                        ctid: window.selectedMsg.ctid,
+                        log_level: logLevel
+                    })
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    document.getElementById('controlStatus').textContent = `Error: ${error.detail}`;
+                    return;
+                }
+                
+                const result = await response.json();
+                document.getElementById('controlStatus').textContent = `✓ ${result.message}`;
+            } catch (err) {
+                document.getElementById('controlStatus').textContent = `Error: ${err.message}`;
+            }
+        }
+        
+        async function sendControlSetVerboseMode() {
+            if (!window.selectedMsg || !window.currentSessionId) {
+                document.getElementById('controlStatus').textContent = 'Error: No message selected or session not active';
+                return;
+            }
+            
+            const verbose = document.getElementById('controlVerbose').checked;
+            document.getElementById('controlStatus').textContent = 'Sending...';
+            
+            try {
+                const response = await fetch(`/sessions/${window.currentSessionId}/control/set-verbose-mode`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        apid: window.selectedMsg.apid,
+                        ctid: window.selectedMsg.ctid,
+                        verbose: verbose
+                    })
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    document.getElementById('controlStatus').textContent = `Error: ${error.detail}`;
+                    return;
+                }
+                
+                const result = await response.json();
+                document.getElementById('controlStatus').textContent = `✓ ${result.message}`;
+            } catch (err) {
+                document.getElementById('controlStatus').textContent = `Error: ${err.message}`;
+            }
+        }
 
         // Init
         refreshSessions();
