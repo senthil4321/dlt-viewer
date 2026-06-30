@@ -125,28 +125,54 @@ def build_dlt_message(
 
 
 async def send_messages_tcp(host: str, port: int, ecu_id: str, count: int, interval: float) -> None:
-    """Send DLT messages via TCP."""
-    reader, writer = await asyncio.open_connection(host, port)
-    print(f"Connected to {host}:{port} via TCP")
-
-    try:
-        for i in range(count):
-            level = [LOG_LEVEL_ERROR, LOG_LEVEL_WARN, LOG_LEVEL_INFO, LOG_LEVEL_DEBUG][i % 4]
-            message = build_dlt_message(
-                ecu_id=ecu_id,
-                apid="SNDR",
-                ctid="MAIN",
-                level=level,
-                arguments=[f"Test message {i}", i * 100, i % 2 == 0],
-            )
-            writer.write(message)
-            await writer.drain()
-            print(f"[{i+1}/{count}] Sent message (level={level})")
-            await asyncio.sleep(interval)
-    finally:
-        writer.close()
-        await writer.wait_closed()
-    print("Done.")
+    """Send DLT messages via TCP (as a server listening for client connections)."""
+    
+    client_ready = asyncio.Event()
+    messages_sent = 0
+    
+    async def handle_connection(reader: asyncio.StreamReader, writer: asyncio.StreamWriter) -> None:
+        nonlocal messages_sent
+        peer_addr = writer.get_extra_info('peername')
+        print(f"Client connected from {peer_addr}")
+        client_ready.set()
+        
+        try:
+            for i in range(count):
+                level = [LOG_LEVEL_ERROR, LOG_LEVEL_WARN, LOG_LEVEL_INFO, LOG_LEVEL_DEBUG][i % 4]
+                message = build_dlt_message(
+                    ecu_id=ecu_id,
+                    apid="SNDR",
+                    ctid="MAIN",
+                    level=level,
+                    arguments=[f"Test message {i}", i * 100, i % 2 == 0],
+                )
+                writer.write(message)
+                await writer.drain()
+                print(f"[{i+1}/{count}] Sent message (level={level})")
+                messages_sent += 1
+                await asyncio.sleep(interval)
+        except asyncio.CancelledError:
+            pass
+        except Exception as e:
+            print(f"Error: {e}")
+        finally:
+            writer.close()
+            await writer.wait_closed()
+            print(f"Client {peer_addr} disconnected")
+    
+    server = await asyncio.start_server(handle_connection, host, port)
+    print(f"ECU simulator listening on {host}:{port} (waiting for client...)")
+    
+    async with server:
+        # Wait for client connection with a timeout
+        try:
+            await asyncio.wait_for(client_ready.wait(), timeout=10.0)
+        except asyncio.TimeoutError:
+            print("Timeout waiting for client connection. Exiting.")
+            return
+        
+        # Give the client time to receive all messages
+        await asyncio.sleep(count * interval + 2)
 
 
 async def send_messages_udp(host: str, port: int, ecu_id: str, count: int, interval: float) -> None:
