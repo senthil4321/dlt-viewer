@@ -3,6 +3,7 @@ import contextlib
 from collections import defaultdict
 
 from fastapi import WebSocket
+from starlette.websockets import WebSocketDisconnect
 
 from ..config import get_settings
 from ..models import EventEnvelope
@@ -68,8 +69,11 @@ class SessionManager:
         heartbeat_task = asyncio.create_task(self.broadcast_heartbeat(session_id))
         try:
             while True:
-                # Keep connection alive and reserve room for future client commands.
-                await websocket.receive_text()
+                # Keep the connection alive; handle future client commands here.
+                try:
+                    await websocket.receive_text()
+                except WebSocketDisconnect:
+                    break
         finally:
             heartbeat_task.cancel()
             with contextlib.suppress(asyncio.CancelledError):

@@ -56,3 +56,37 @@ class SessionActionResponse(BaseModel):
     session_id: str
     state: Literal["connecting", "connected", "disconnected"]
     message: str
+
+
+# ---------------------------------------------------------------------------
+# Ingestion event payload models
+# ---------------------------------------------------------------------------
+
+class DltMessagePayload(BaseModel):
+    """Payload for a ``message`` WebSocket event."""
+
+    ecu_id:        str
+    apid:          str
+    ctid:          str
+    msg_type:      str
+    log_level:     str
+    verbose:       bool
+    mcnt:          int
+    timestamp_sec: float
+    payload_text:  str
+    decode_error:  str | None = None
+
+
+class StatsPayload(BaseModel):
+    """Payload for a ``stats`` WebSocket event (broadcast every 5 s)."""
+
+    messages_received: int
+    bytes_received:    int
+    decode_errors:     int
+
+
+class ErrorPayload(BaseModel):
+    """Payload for an ``error`` WebSocket event."""
+
+    code:    str
+    detail:  str
