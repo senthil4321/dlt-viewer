@@ -15,3 +15,10 @@ compile_commands.json
 # deb packaging directories
 debian/
 debtmp/
+
+# Node.js / webui
+webui/node_modules/
+webui/dist/
+webui/.env
+webui/.env.local
+*.tsbuildinfo

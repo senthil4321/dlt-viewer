@@ -92,26 +92,40 @@ python -m pytest tests/ -v
 
 All 41 tests pass (parser unit tests, REST API tests, WebSocket tests).
 
-## Web UI MVP
+## Web UI MVP (Phase 5)
 
-Phase 5 now includes a React + Vite frontend scaffold in `../webui` with:
+The React + Vite frontend lives in `../webui` with:
 
-- session creation and connect/disconnect controls
-- live WebSocket stream subscription with reconnect
-- filter bar for ecu/apid/ctid/level/payload text
-- stats cards for receive rate, traffic, decode errors, and client lag
-- message detail drawer and virtualized log list
+- **Connections page**: create sessions, select transport/host/port/ECU, connect/disconnect
+- **Live log table**: virtualized table with ECU, APID, CTID, level, payload columns
+- **Filter bar**: real-time search by ECU/APID/CTID/level/payload and level-only dropdown
+- **Stats panel**: receive rate, traffic bytes, decode errors, client lag
+- **Message drawer**: full field inspection with copyable values
+- **WebSocket auto-reconnect**: 1.5 s backoff on disconnect
 
-Run it with:
+### Run the full stack
 
+**Terminal 1 — Backend bridge:**
 ```bash
-cd ..\webui
+cd webbridge
+python -m venv .venv
+.venv\Scripts\activate       # Windows
+pip install -r requirements.txt
+uvicorn app.main:app --host 127.0.0.1 --port 8008 --reload
+```
+
+**Terminal 2 — Frontend dev server:**
+```bash
+cd webui
 npm install
 npm run dev
 ```
 
+Then open http://127.0.0.1:5173 in your browser.
+
 The FastAPI bridge enables CORS for `http://127.0.0.1:5173` and
-`http://localhost:5173` by default.
+`http://localhost:5173` by default. Adjust `WEBBRIDGE_CORS_ALLOWED_ORIGINS`
+in `.env` to add other origins.
 
 ## Next implementation slice
 
