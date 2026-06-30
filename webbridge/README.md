@@ -92,6 +92,24 @@ python -m pytest tests/ -v
 
 All 41 tests pass (parser unit tests, REST API tests, WebSocket tests).
 
+## Test ECU simulator
+
+To test the bridge without a real ECU, run the synthetic DLT sender:
+
+```bash
+python test_ecu_simulator.py --transport tcp --host 127.0.0.1 --port 3490 --count 100 --interval 0.5
+```
+
+This will send 100 synthetic DLT messages to the given host:port every 0.5 seconds.
+
+Use this to end-to-end test the full stack:
+1. Start the bridge: `uvicorn app.main:app --host 127.0.0.1 --port 8008 --reload`
+2. Create a session via REST: `POST /sessions` with `transport=tcp, host=127.0.0.1, port=3490, ecu_id=ECU1`
+3. Start the frontend: `npm run dev` in `../webui`
+4. In the web UI, select the session and click **Connect**
+5. Run the simulator: `python test_ecu_simulator.py --host 127.0.0.1 --port 3490`
+6. Watch messages appear in the live stream table
+
 ## Web UI MVP (Phase 5)
 
 The React + Vite frontend lives in `../webui` with:
