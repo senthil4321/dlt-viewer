@@ -111,15 +111,22 @@ def build_dlt_message(
         | HTYP_VERBOSE
     )
 
-    std_header_core = struct.pack("!BH", htyp, len(ext_header) + len(payload) + 4)
-    std_header = std_header_core + ecui + session_id + timestamp
-
-    # Message counter (mcnt) and length
+    # Calculate total message length
+    total_len = 4 + len(ecui) + len(session_id) + len(timestamp) + len(ext_header) + len(payload)
+    
+    # Message format: HTYP | MCNT | LENGTH | [std header fields] | [ext header] | [payload]
+    # This matches the DLT network/TCP framing standard (no storage header)
     mcnt = struct.pack("!B", 1)
-    msg_len = struct.pack("!H", len(std_header) + 1 + len(ext_header) + len(payload))
-
-    # Full message (without storage header for UDP)
-    dlt_message = mcnt + msg_len + std_header + ext_header + payload
+    dlt_message = (
+        struct.pack("!B", htyp) +
+        mcnt +
+        struct.pack("!H", total_len) +
+        ecui +
+        session_id +
+        timestamp +
+        ext_header +
+        payload
+    )
 
     return dlt_message
 
@@ -128,6 +135,7 @@ async def send_messages_tcp(host: str, port: int, ecu_id: str, count: int, inter
     """Send DLT messages via TCP (as a server listening for client connections)."""
     
     client_ready = asyncio.Event()
+    done_sending = asyncio.Event()
     messages_sent = 0
     
     async def handle_connection(reader: asyncio.StreamReader, writer: asyncio.StreamWriter) -> None:
@@ -151,6 +159,12 @@ async def send_messages_tcp(host: str, port: int, ecu_id: str, count: int, inter
                 print(f"[{i+1}/{count}] Sent message (level={level})")
                 messages_sent += 1
                 await asyncio.sleep(interval)
+            
+            print(f"All {count} messages sent to {peer_addr}")
+            done_sending.set()
+            
+            # Keep connection alive to prevent immediate close
+            await asyncio.sleep(5)
         except asyncio.CancelledError:
             pass
         except Exception as e:
@@ -166,13 +180,19 @@ async def send_messages_tcp(host: str, port: int, ecu_id: str, count: int, inter
     async with server:
         # Wait for client connection with a timeout
         try:
-            await asyncio.wait_for(client_ready.wait(), timeout=10.0)
+            await asyncio.wait_for(client_ready.wait(), timeout=60.0)
         except asyncio.TimeoutError:
             print("Timeout waiting for client connection. Exiting.")
             return
         
-        # Give the client time to receive all messages
-        await asyncio.sleep(count * interval + 2)
+        # Wait for all messages to be sent, then keep server alive a bit longer
+        try:
+            await asyncio.wait_for(done_sending.wait(), timeout=60.0)
+        except asyncio.TimeoutError:
+            print("Timeout waiting for all messages to be sent.")
+        
+        # Keep the server alive briefly after sending is done
+        await asyncio.sleep(2)
 
 
 async def send_messages_udp(host: str, port: int, ecu_id: str, count: int, interval: float) -> None:
