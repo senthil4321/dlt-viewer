@@ -1,6 +1,8 @@
 from fastapi import FastAPI, HTTPException, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import ORJSONResponse
+from fastapi.responses import ORJSONResponse, FileResponse
+from fastapi.staticfiles import StaticFiles
+from pathlib import Path
 
 from .config import get_settings
 from .ingestion.ingestion_manager import ingestion_manager
@@ -28,6 +30,21 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Serve static files (HTML UI)
+static_dir = Path(__file__).parent.parent / "static"
+if static_dir.exists():
+    app.mount("/ui", StaticFiles(directory=str(static_dir), html=True), name="static")
+
+
+# ---------------------------------------------------------------------------
+# Root / UI
+# ---------------------------------------------------------------------------
+
+@app.get("/", response_class=FileResponse)
+async def root():
+    """Serve the web UI."""
+    return FileResponse(Path(__file__).parent.parent / "static" / "index.html", media_type="text/html")
 
 
 # ---------------------------------------------------------------------------

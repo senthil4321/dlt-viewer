@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DLT Viewer Web Bridge Console</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        :root {
+            --panel: rgba(11, 15, 22, 0.74);
+            --panel-border: rgba(255, 255, 255, 0.1);
+            --muted: #b5b8c7;
+            --accent: #f0894f;
+            --accent-secondary: #6e96ff;
+            --danger: #ff6d6d;
+            --ok: #7fd6a2;
+            --warn: #ffcb6b;
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            color: #f6f2e8;
+            background: radial-gradient(circle at top left, rgba(227, 104, 66, 0.24), transparent 26%),
+                        radial-gradient(circle at top right, rgba(43, 111, 255, 0.24), transparent 24%),
+                        linear-gradient(135deg, #151922 0%, #1c1f2d 42%, #0d1118 100%);
+            min-height: 100vh;
+        }
+
+        .app-shell {
+            position: relative;
+            min-height: 100vh;
+            padding: 32px;
+        }
+
+        .hero {
+            margin-bottom: 24px;
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            margin: 0 0 10px 0;
+            line-height: 1;
+        }
+
+        .eyebrow {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.18em;
+            color: #ffb48e;
+            margin: 0 0 10px 0;
+        }
+
+        .hero-copy {
+            color: var(--muted);
+            line-height: 1.6;
+            max-width: 48rem;
+            margin: 14px 0 0 0;
+        }
+
+        .error-banner {
+            background: var(--panel);
+            border: 1px solid var(--panel-border);
+            border-radius: 16px;
+            padding: 14px 16px;
+            color: #ffd0d0;
+            margin-bottom: 20px;
+        }
+
+        .layout-grid {
+            display: grid;
+            grid-template-columns: minmax(22rem, 28rem) minmax(0, 1fr);
+            gap: 20px;
+        }
+
+        .panel {
+            background: var(--panel);
+            border: 1px solid var(--panel-border);
+            border-radius: 28px;
+            padding: 22px;
+            backdrop-filter: blur(18px);
+        }
+
+        .panel-header {
+            margin-bottom: 18px;
+        }
+
+        .panel-header h2 {
+            font-size: 1.3rem;
+            margin: 0;
+        }
+
+        .panel-header p {
+            color: var(--muted);
+            margin: 10px 0 0 0;
+            line-height: 1.5;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+            margin-bottom: 18px;
+        }
+
+        .form-grid label {
+            display: grid;
+            gap: 8px;
+        }
+
+        .form-grid span {
+            color: var(--muted);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        input, select {
+            width: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.04);
+            color: inherit;
+            padding: 12px 14px;
+            font: inherit;
+        }
+
+        input:focus, select:focus {
+            outline: 2px solid rgba(240, 137, 79, 0.5);
+            border-color: rgba(240, 137, 79, 0.7);
+        }
+
+        button {
+            border: 0;
+            border-radius: 999px;
+            padding: 12px 18px;
+            font: inherit;
+            cursor: pointer;
+            transition: transform 150ms ease, opacity 150ms ease;
+        }
+
+        button:disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
+        }
+
+        button:hover:not(:disabled) {
+            transform: translateY(-1px);
+        }
+
+        .primary-button {
+            width: 100%;
+            margin-top: 18px;
+            background: linear-gradient(135deg, var(--accent) 0%, #ee6f56 100%);
+            color: #150f0d;
+            font-weight: 700;
+        }
+
+        .secondary-button {
+            background: rgba(110, 150, 255, 0.18);
+            color: #dce5ff;
+            margin: 0 6px 0 0;
+        }
+
+        .ghost-button {
+            background: rgba(255, 255, 255, 0.06);
+            color: #f2f1ed;
+        }
+
+        .sessions-list {
+            display: grid;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .session-card {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            align-items: center;
+            padding: 16px;
+            border-radius: 18px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.03);
+            cursor: pointer;
+            transition: all 150ms ease;
+        }
+
+        .session-card:hover {
+            border-color: rgba(240, 137, 79, 0.3);
+        }
+
+        .session-card.active {
+            border-color: rgba(240, 137, 79, 0.56);
+            background: rgba(240, 137, 79, 0.09);
+        }
+
+        .session-card-info h3 {
+            margin: 0;
+            font-size: 1rem;
+        }
+
+        .session-card-info p {
+            margin: 6px 0 0 0;
+            font-size: 0.9rem;
+            color: var(--muted);
+        }
+
+        .state-pill {
+            display: inline-block;
+            border-radius: 999px;
+            padding: 6px 10px;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-left: 10px;
+        }
+
+        .state-connected {
+            background: rgba(127, 214, 162, 0.16);
+            color: var(--ok);
+        }
+
+        .state-connecting {
+            background: rgba(255, 203, 107, 0.16);
+            color: var(--warn);
+        }
+
+        .state-error {
+            background: rgba(255, 109, 109, 0.16);
+            color: var(--danger);
+        }
+
+        .empty-state {
+            color: var(--muted);
+            text-align: center;
+            padding: 24px;
+        }
+
+        .stream-header {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+
+        .filter-bar {
+            display: grid;
+            grid-template-columns: 1fr 10rem;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .stat-card {
+            background: var(--panel);
+            border: 1px solid var(--panel-border);
+            border-radius: 18px;
+            padding: 18px;
+        }
+
+        .stat-card span {
+            display: block;
+            font-size: 0.7rem;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 8px;
+        }
+
+        .stat-card strong {
+            font-size: 1.1rem;
+        }
+
+        .log-table {
+            border-radius: 22px;
+            overflow: auto;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            max-height: 500px;
+        }
+
+        .log-head {
+            display: grid;
+            grid-template-columns: 0.8fr 0.8fr 0.8fr 0.8fr minmax(0, 2.8fr);
+            gap: 14px;
+            padding: 14px 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-size: 0.7rem;
+            background: rgba(255, 255, 255, 0.06);
+            color: var(--muted);
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+        }
+
+        .log-row {
+            display: grid;
+            grid-template-columns: 0.8fr 0.8fr 0.8fr 0.8fr minmax(0, 2.8fr);
+            gap: 14px;
+            padding: 0 16px;
+            height: 56px;
+            align-items: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            background: rgba(255, 255, 255, 0.02);
+            cursor: pointer;
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+
+        .log-row:hover,
+        .log-row.selected {
+            background: rgba(110, 150, 255, 0.14);
+        }
+
+        .log-row span {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .drawer {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            width: min(28rem, calc(100vw - 32px));
+            height: calc(100vh - 48px);
+            background: var(--panel);
+            border: 1px solid var(--panel-border);
+            border-radius: 28px;
+            padding: 22px;
+            overflow-y: auto;
+            transform: translateX(calc(100% + 28px));
+            transition: transform 220ms ease;
+        }
+
+        .drawer.open {
+            transform: translateX(0);
+        }
+
+        .drawer-header {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 18px;
+        }
+
+        .drawer-content h2 {
+            font-size: 1.2rem;
+            margin: 0;
+        }
+
+        .detail-grid {
+            display: grid;
+            gap: 12px;
+        }
+
+        .detail-grid div {
+            display: grid;
+            gap: 4px;
+        }
+
+        .detail-grid dt {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--muted);
+        }
+
+        .detail-grid dd {
+            margin: 0;
+            font-family: monospace;
+            word-break: break-all;
+        }
+
+        @media (max-width: 1180px) {
+            .layout-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .drawer {
+                top: auto;
+                right: 16px;
+                bottom: 16px;
+                left: 16px;
+                width: auto;
+                height: min(28rem, calc(100vh - 32px));
+                transform: translateY(calc(100% + 16px));
+            }
+
+            .drawer.open {
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-shell">
+        <header class="hero">
+            <p class="eyebrow">Phase 5 · Web UI MVP</p>
+            <h1>DLT Viewer Live Bridge Console</h1>
+            <p class="hero-copy">
+                Create ECU sessions, drive TCP or UDP ingestion, inspect live DLT traffic, and watch stream health in one browser surface.
+            </p>
+        </header>
+
+        <div id="errorBanner" class="error-banner" style="display:none;"></div>
+
+        <main class="layout-grid">
+            <section class="panel">
+                <div class="panel-header">
+                    <h2>Connections</h2>
+                    <p>Create a bridge session and route it into the live stream.</p>
+                </div>
+
+                <div class="form-grid">
+                    <label>
+                        <span>Transport</span>
+                        <select id="transport">
+                            <option value="tcp">TCP</option>
+                            <option value="udp">UDP</option>
+                        </select>
+                    </label>
+                    <label>
+                        <span>Host</span>
+                        <input id="host" type="text" value="127.0.0.1">
+                    </label>
+                    <label>
+                        <span>Port</span>
+                        <input id="port" type="number" min="1" max="65535" value="3490">
+                    </label>
+                    <label>
+                        <span>ECU ID</span>
+                        <input id="ecuId" type="text" value="ECU1">
+                    </label>
+                </div>
+
+                <button class="primary-button" id="createBtn" onclick="createSession()">Create session</button>
+
+                <div class="sessions-list" id="sessionsList"></div>
+            </section>
+
+            <section class="panel">
+                <div class="stream-header">
+                    <div>
+                        <h2>Live stream</h2>
+                        <p id="streamInfo">Select a session to subscribe to its stream.</p>
+                    </div>
+                </div>
+
+                <div class="filter-bar">
+                    <input id="searchText" type="text" placeholder="Filter ecu / apid / ctid / payload">
+                    <select id="levelFilter">
+                        <option value="all">All levels</option>
+                        <option value="fatal">Fatal</option>
+                        <option value="error">Error</option>
+                        <option value="warn">Warn</option>
+                        <option value="info">Info</option>
+                        <option value="debug">Debug</option>
+                        <option value="verbose">Verbose</option>
+                    </select>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <span>Receive rate</span>
+                        <strong id="statRate">0.0 msg/s</strong>
+                    </div>
+                    <div class="stat-card">
+                        <span>Traffic</span>
+                        <strong id="statTraffic">0 B</strong>
+                    </div>
+                    <div class="stat-card">
+                        <span>Decode errors</span>
+                        <strong id="statErrors">0</strong>
+                    </div>
+                    <div class="stat-card">
+                        <span>Client lag</span>
+                        <strong id="statLag">0 ms</strong>
+                    </div>
+                </div>
+
+                <div class="log-table">
+                    <div class="log-head">
+                        <span>ECU</span>
+                        <span>APID</span>
+                        <span>CTID</span>
+                        <span>Level</span>
+                        <span>Payload</span>
+                    </div>
+                    <div id="logContainer"></div>
+                </div>
+            </section>
+        </main>
+
+        <aside class="drawer" id="drawer">
+            <div class="drawer-header">
+                <div class="drawer-content">
+                    <p class="eyebrow">Message detail</p>
+                    <h2 id="drawerTitle">Select a log row</h2>
+                </div>
+                <button class="ghost-button" onclick="closeDrawer()">Close</button>
+            </div>
+            <div class="detail-grid" id="detailGrid"></div>
+        </aside>
+    </div>
+
+    <script>
+        const API_BASE = 'http://127.0.0.1:8008';
+        let currentSessionId = null;
+        let messages = {};
+        let stats = {};
+        let selectedMessage = null;
+        let ws = null;
+        let reconnectTimeout = null;
+
+        async function apiCall(path, method = 'GET', body = null) {
+            const response = await fetch(`${API_BASE}${path}`, {
+                method,
+                headers: { 'content-type': 'application/json' },
+                body: body ? JSON.stringify(body) : undefined,
+            });
+            if (!response.ok) {
+                throw new Error(await response.text());
+            }
+            return response.json();
+        }
+
+        function showError(msg) {
+            const banner = document.getElementById('errorBanner');
+            banner.textContent = msg;
+            banner.style.display = 'block';
+            setTimeout(() => { banner.style.display = 'none'; }, 5000);
+        }
+
+        async function createSession() {
+            const btn = document.getElementById('createBtn');
+            btn.disabled = true;
+            try {
+                const session = await apiCall('/sessions', 'POST', {
+                    transport: document.getElementById('transport').value,
+                    host: document.getElementById('host').value,
+                    port: parseInt(document.getElementById('port').value),
+                    ecu_id: document.getElementById('ecuId').value,
+                });
+                await refreshSessions();
+                currentSessionId = session.session_id;
+                renderSessions();
+            } catch (e) {
+                showError(e.message);
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        async function refreshSessions() {
+            const sessions = await apiCall('/sessions');
+            window.sessions = sessions;
+            renderSessions();
+        }
+
+        function renderSessions() {
+            const container = document.getElementById('sessionsList');
+            const sessions = window.sessions || [];
+            
+            container.innerHTML = sessions.map(s => {
+                const isActive = currentSessionId === s.session_id;
+                return `
+                    <div class="session-card ${isActive ? 'active' : ''}" onclick="selectSession('${s.session_id}')">
+                        <div class="session-card-info">
+                            <h3>
+                                ${s.ecu_id}
+                                <span class="state-pill state-${s.state}">${s.state}</span>
+                            </h3>
+                            <p>${s.transport.toUpperCase()} · ${s.host}:${s.port}</p>
+                        </div>
+                        <div style="display:flex; gap:8px;">
+                            <button class="secondary-button" onclick="event.stopPropagation(); connectSession('${s.session_id}')" 
+                                    ${s.state === 'connected' || s.state === 'connecting' ? 'disabled' : ''}>Connect</button>
+                            <button class="ghost-button" onclick="event.stopPropagation(); disconnectSession('${s.session_id}')"
+                                    ${s.state === 'created' || s.state === 'disconnected' ? 'disabled' : ''}>Disconnect</button>
+                        </div>
+                    </div>
+                `;
+            }).join('') || '<p class="empty-state">No sessions created yet.</p>';
+        }
+
+        function selectSession(sessionId) {
+            currentSessionId = sessionId;
+            messages[sessionId] = messages[sessionId] || [];
+            renderSessions();
+            connectWebSocket();
+            renderLogs();
+        }
+
+        async function connectSession(sessionId) {
+            try {
+                await apiCall(`/sessions/${sessionId}/connect`, 'POST');
+                await refreshSessions();
+            } catch (e) {
+                showError(e.message);
+            }
+        }
+
+        async function disconnectSession(sessionId) {
+            try {
+                await apiCall(`/sessions/${sessionId}/disconnect`, 'POST');
+                await refreshSessions();
+            } catch (e) {
+                showError(e.message);
+            }
+        }
+
+        function connectWebSocket() {
+            if (ws) ws.close();
+            if (!currentSessionId) return;
+
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsUrl = `${protocol}//${window.location.host}/stream/${currentSessionId}`;
+            
+            ws = new WebSocket(wsUrl);
+
+            ws.onmessage = (event) => {
+                const ev = JSON.parse(event.data);
+                handleStreamEvent(ev);
+            };
+
+            ws.onerror = () => showError('WebSocket error');
+            ws.onclose = () => {
+                ws = null;
+                if (currentSessionId) {
+                    reconnectTimeout = setTimeout(connectWebSocket, 1500);
+                }
+            };
+        }
+
+        function handleStreamEvent(event) {
+            if (event.type === 'message') {
+                const msgs = messages[event.session_id] || [];
+                msgs.push(event.payload);
+                if (msgs.length > 2000) msgs.shift();
+                messages[event.session_id] = msgs;
+                renderLogs();
+            } else if (event.type === 'stats') {
+                stats[event.session_id] = event.payload;
+                renderStats();
+            } else if (event.type === 'connection_state') {
+                refreshSessions();
+            }
+        }
+
+        function renderStats() {
+            const s = currentSessionId ? stats[currentSessionId] : null;
+            document.getElementById('statRate').textContent = s ? `${(s.messages_received / 5).toFixed(1)} msg/s` : '0.0 msg/s';
+            document.getElementById('statTraffic').textContent = s ? formatBytes(s.bytes_received) : '0 B';
+            document.getElementById('statErrors').textContent = s ? s.decode_errors : '0';
+            document.getElementById('statLag').textContent = s ? '0 ms' : '0 ms';
+        }
+
+        function formatBytes(bytes) {
+            if (bytes < 1024) return `${bytes} B`;
+            if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+            return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+        }
+
+        function renderLogs() {
+            const msgs = messages[currentSessionId] || [];
+            const searchText = document.getElementById('searchText').value.toLowerCase();
+            const level = document.getElementById('levelFilter').value;
+
+            const filtered = msgs.filter(m => {
+                const levelOk = level === 'all' || m.log_level.toLowerCase() === level;
+                const textOk = !searchText || [m.ecu_id, m.apid, m.ctid, m.payload_text].some(
+                    x => x.toLowerCase().includes(searchText)
+                );
+                return levelOk && textOk;
+            });
+
+            const container = document.getElementById('logContainer');
+            container.innerHTML = filtered.map((m, i) => {
+                const id = `${m.timestamp_sec}:${m.mcnt}`;
+                return `
+                    <div class="log-row ${selectedMessage === id ? 'selected' : ''}" 
+                         onclick="selectMessage('${id}', ${filtered.findIndex(x => `${x.timestamp_sec}:${x.mcnt}` === id)})">
+                        <span>${m.ecu_id}</span>
+                        <span>${m.apid}</span>
+                        <span>${m.ctid}</span>
+                        <span>${m.log_level}</span>
+                        <span>${m.payload_text}</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function selectMessage(id, index) {
+            selectedMessage = id;
+            const msgs = messages[currentSessionId] || [];
+            const filtered = msgs.filter(m => {
+                const searchText = document.getElementById('searchText').value.toLowerCase();
+                const level = document.getElementById('levelFilter').value;
+                const levelOk = level === 'all' || m.log_level.toLowerCase() === level;
+                const textOk = !searchText || [m.ecu_id, m.apid, m.ctid, m.payload_text].some(
+                    x => x.toLowerCase().includes(searchText)
+                );
+                return levelOk && textOk;
+            });
+            const m = filtered[index];
+            
+            document.getElementById('drawerTitle').textContent = `${m.apid}/${m.ctid}`;
+            document.getElementById('detailGrid').innerHTML = `
+                <div><dt>ECU</dt><dd>${m.ecu_id}</dd></div>
+                <div><dt>Message count</dt><dd>${m.mcnt}</dd></div>
+                <div><dt>Message type</dt><dd>${m.msg_type}</dd></div>
+                <div><dt>Level</dt><dd>${m.log_level}</dd></div>
+                <div><dt>Verbose</dt><dd>${m.verbose ? 'true' : 'false'}</dd></div>
+                <div><dt>Timestamp</dt><dd>${m.timestamp_sec}</dd></div>
+                <div><dt>Payload</dt><dd style="white-space:pre-wrap; line-height:1.6;">${m.payload_text}</dd></div>
+                ${m.decode_error ? `<div><dt>Decode error</dt><dd>${m.decode_error}</dd></div>` : ''}
+            `;
+            document.getElementById('drawer').classList.add('open');
+            renderLogs();
+        }
+
+        function closeDrawer() {
+            selectedMessage = null;
+            document.getElementById('drawer').classList.remove('open');
+            renderLogs();
+        }
+
+        // Event listeners
+        document.getElementById('searchText').addEventListener('input', renderLogs);
+        document.getElementById('levelFilter').addEventListener('change', renderLogs);
+
+        // Init
+        refreshSessions();
+    </script>
+</body>
+</html>

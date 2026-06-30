@@ -112,10 +112,11 @@ Use this to end-to-end test the full stack:
 
 ## Web UI MVP (Phase 5)
 
-The React + Vite frontend lives in `../webui` with:
+The web UI is embedded directly in the backend as vanilla HTML5 + JavaScript (no build step required).
 
+**Features:**
 - **Connections page**: create sessions, select transport/host/port/ECU, connect/disconnect
-- **Live log table**: virtualized table with ECU, APID, CTID, level, payload columns
+- **Live log table**: ECU, APID, CTID, level, payload columns with virtualized scrolling
 - **Filter bar**: real-time search by ECU/APID/CTID/level/payload and level-only dropdown
 - **Stats panel**: receive rate, traffic bytes, decode errors, client lag
 - **Message drawer**: full field inspection with copyable values
@@ -123,7 +124,6 @@ The React + Vite frontend lives in `../webui` with:
 
 ### Run the full stack
 
-**Terminal 1 — Backend bridge:**
 ```bash
 cd webbridge
 python -m venv .venv
@@ -132,18 +132,15 @@ pip install -r requirements.txt
 uvicorn app.main:app --host 127.0.0.1 --port 8008 --reload
 ```
 
-**Terminal 2 — Frontend dev server:**
-```bash
-cd webui
-npm install
-npm run dev
-```
+Then open http://127.0.0.1:8008 in your browser.
 
-Then open http://127.0.0.1:5173 in your browser.
+### Why no npm/Node.js?
 
-The FastAPI bridge enables CORS for `http://127.0.0.1:5173` and
-`http://localhost:5173` by default. Adjust `WEBBRIDGE_CORS_ALLOWED_ORIGINS`
-in `.env` to add other origins.
+The UI is served as static HTML+CSS+JavaScript from the FastAPI backend, making it:
+- **Simpler**: single Python process, no separate build/dev server
+- **Easier to deploy**: static files embedded in repo, no npm dependencies
+- **Faster**: no JavaScript framework overhead
+- **Offline-capable**: UI works without external CDNs
 
 ## Next implementation slice
 

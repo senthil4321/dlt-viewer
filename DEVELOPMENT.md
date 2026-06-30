@@ -1,15 +1,15 @@
 # Development Guide
 
-This document covers setting up and running the dlt-viewer webbridge + web UI in development mode.
+This document covers setting up and running the dlt-viewer webbridge in development mode.
 
 ## Prerequisites
 
 - **Python 3.11+** with `pip` and `venv`
-- **Node.js 18+** with `npm`
 
 ## Backend: Webbridge (Python FastAPI)
 
 The webbridge is a REST + WebSocket service that ingests DLT traffic and exposes it via HTTP/WebSocket.
+It includes a built-in HTML5 web UI served directly from the backend.
 
 ### Setup
 
@@ -34,6 +34,7 @@ uvicorn app.main:app --host 127.0.0.1 --port 8008 --reload
 ```
 
 The API is available at http://127.0.0.1:8008.
+The web UI is available at http://127.0.0.1:8008.
 
 OpenAPI docs: http://127.0.0.1:8008/docs
 
@@ -59,51 +60,18 @@ cp .env.example .env
 | `WEBBRIDGE_PORT` | `8008` | Bind port |
 | `WEBBRIDGE_LOG_LEVEL` | `info` | Python logging level |
 | `WEBBRIDGE_HEARTBEAT_INTERVAL_SEC` | `5.0` | WebSocket heartbeat interval |
-| `WEBBRIDGE_CORS_ALLOWED_ORIGINS` | `["http://127.0.0.1:5173","http://localhost:5173"]` | CORS allowed origins |
+| `WEBBRIDGE_CORS_ALLOWED_ORIGINS` | `["http://127.0.0.1:5173","http://localhost:5173"]` | CORS allowed origins (for external clients) |
 
-## Frontend: Web UI (React + Vite)
+## Frontend: Web UI (Vanilla HTML5 + JavaScript)
 
-The web UI is a single-page browser application for managing ECU sessions and inspecting live DLT traffic.
+The web UI is embedded in the backend as static HTML, CSS, and JavaScript files.
+No build step or Node.js is required.
 
-### Setup
-
-```bash
-cd webui
-npm install
-```
-
-### Run
-
-```bash
-npm run dev
-```
-
-The dev server is available at http://127.0.0.1:5173.
-
-### Build
-
-```bash
-npm run build
-```
-
-Outputs to `dist/`.
-
-### Configuration
-
-Copy `src/.env.example` to `.env` and customize as needed:
-
-```bash
-cp .env.example .env
-```
-
-| Variable | Default | Purpose |
-|----------|---------|---------|
-| `VITE_API_BASE` | `http://127.0.0.1:8008` | Backend API URL |
-| `VITE_WS_BASE` | (derived from `VITE_API_BASE`) | Backend WebSocket URL |
+The UI is located in `webbridge/static/index.html` and includes all CSS and JavaScript inline.
 
 ## Running the Full Stack
 
-### Terminal 1 — Backend
+### Single Process — Backend + UI
 
 ```bash
 cd webbridge
@@ -111,16 +79,11 @@ cd webbridge
 uvicorn app.main:app --host 127.0.0.1 --port 8008 --reload
 ```
 
-### Terminal 2 — Frontend
-
-```bash
-cd webui
-npm run dev
-```
+Open http://127.0.0.1:8008 in your browser.
 
 ### Using the UI
 
-1. Open http://127.0.0.1:5173 in your browser.
+1. Open http://127.0.0.1:8008 in your browser.
 2. On the **Connections** panel:
    - Enter a DLT source (transport, host, port, ECU ID).
    - Click **Create session**.
@@ -135,6 +98,20 @@ npm run dev
    - Decode errors
    - Client lag (milliseconds)
 
+## Test ECU Simulator
+
+To test the bridge without a real ECU, run the synthetic DLT sender:
+
+```bash
+cd webbridge
+python test_ecu_simulator.py --transport tcp --host 127.0.0.1 --port 3490 --count 100 --interval 0.5
+```
+
+Then in the web UI:
+1. Create a session with `host=127.0.0.1, port=3490`.
+2. Click **Connect**.
+3. Run the simulator — messages will appear in the stream table.
+
 ## Troubleshooting
 
 ### Backend won't start
@@ -143,17 +120,16 @@ npm run dev
 - Verify `.venv` is activated: Windows should show `(.venv)` in the prompt.
 - Check port 8008 is not in use: `netstat -an | findstr :8008` (Windows) or `lsof -i :8008` (macOS/Linux).
 
-### Frontend dev server won't start
+### Web UI doesn't load
 
-- Ensure Node.js 18+ is installed: `node --version`.
-- Delete `node_modules/` and `.next/` (if present) and try `npm install` again.
-- Check port 5173 is not in use.
+- Confirm the backend is running and accessible at http://127.0.0.1:8008.
+- Check browser console (F12) for errors.
+- Ensure `webbridge/static/index.html` exists.
 
 ### WebSocket connection fails
 
-- Confirm the backend is running and accessible at the API base URL.
+- Confirm the backend is running.
 - Check browser console (F12) for error messages.
-- Verify `WEBBRIDGE_CORS_ALLOWED_ORIGINS` includes `http://127.0.0.1:5173` or your frontend URL.
 
 ### No DLT messages appear
 
