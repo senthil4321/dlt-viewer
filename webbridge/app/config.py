@@ -11,6 +11,12 @@ class Settings(BaseSettings):
     port: int = 8008
     log_level: str = "info"
     heartbeat_interval_sec: float = Field(default=5.0, gt=0.0)
+    cors_allowed_origins: list[str] = Field(
+        default_factory=lambda: [
+            "http://127.0.0.1:5173",
+            "http://localhost:5173",
+        ]
+    )
 
     model_config = SettingsConfigDict(
         env_prefix="WEBBRIDGE_",

@@ -92,6 +92,27 @@ python -m pytest tests/ -v
 
 All 41 tests pass (parser unit tests, REST API tests, WebSocket tests).
 
+## Web UI MVP
+
+Phase 5 now includes a React + Vite frontend scaffold in `../webui` with:
+
+- session creation and connect/disconnect controls
+- live WebSocket stream subscription with reconnect
+- filter bar for ecu/apid/ctid/level/payload text
+- stats cards for receive rate, traffic, decode errors, and client lag
+- message detail drawer and virtualized log list
+
+Run it with:
+
+```bash
+cd ..\webui
+npm install
+npm run dev
+```
+
+The FastAPI bridge enables CORS for `http://127.0.0.1:5173` and
+`http://localhost:5173` by default.
+
 ## Next implementation slice
 
 - **Phase 5**: Web UI MVP (React + Vite) — connections page, live log table,

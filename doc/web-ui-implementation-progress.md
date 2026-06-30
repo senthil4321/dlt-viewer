@@ -6,7 +6,8 @@ Branch: feature/web-ui-python-bridge-mvp
 ## Status
 
 **Phase 3 (Socket Ingestion Engine) and Phase 4 (DLT Parsing) complete.**
-All 41 tests pass. Connect/disconnect endpoints now drive real TCP/UDP ingestion.
+**Phase 5 (Web UI MVP) has been started with an operational frontend scaffold.**
+All 41 backend tests pass. Connect/disconnect endpoints now drive real TCP/UDP ingestion.
 
 ## Completed
 
@@ -48,6 +49,16 @@ All 41 tests pass. Connect/disconnect endpoints now drive real TCP/UDP ingestion
     - `tests/test_dlt_parser.py` — 21 parser unit tests
     - `tests/test_sessions_api.py` — 16 REST API tests
     - `tests/test_websocket.py` — 5 WebSocket tests
+14. **[NEW] Started Phase 5 Web UI MVP** (`webui/`):
+   - Vite + React + TypeScript scaffold
+   - Session creation and connect/disconnect controls
+   - Live WebSocket stream subscription with auto-reconnect
+   - Filter bar for ecu/apid/ctid/level/payload text
+   - Stats cards for receive rate, traffic, decode errors, and client lag
+   - Message detail drawer and virtualized log table
+15. **[NEW] Added browser dev support to bridge**:
+   - Configurable CORS allow-list in `webbridge/app/config.py`
+   - FastAPI CORS middleware wired in `webbridge/app/main.py`
 
 ## Files Added This Checkpoint (Phase 3/4)
 
@@ -68,6 +79,23 @@ All 41 tests pass. Connect/disconnect endpoints now drive real TCP/UDP ingestion
 - `webbridge/app/models.py` — added DltMessagePayload, StatsPayload, ErrorPayload
 - `webbridge/app/services/session_manager.py` — handle WebSocketDisconnect gracefully
 - `webbridge/requirements.txt` — added pytest, pytest-asyncio, httpx
+- `webbridge/app/config.py` — added browser CORS allow-list setting
+- `webbridge/.env.example` — documented CORS allow-list env var
+- `webbridge/README.md` — documented frontend usage and dev origins
+
+## Files Added This Checkpoint (Phase 5)
+
+- `webui/package.json`
+- `webui/tsconfig.json`
+- `webui/tsconfig.app.json`
+- `webui/tsconfig.node.json`
+- `webui/vite.config.ts`
+- `webui/index.html`
+- `webui/src/main.tsx`
+- `webui/src/App.tsx`
+- `webui/src/lib/api.ts`
+- `webui/src/lib/types.ts`
+- `webui/src/styles.css`
 
 ## How To Resume Later
 
@@ -96,12 +124,10 @@ All 41 tests pass. Connect/disconnect endpoints now drive real TCP/UDP ingestion
 
 ## Next Tasks (Phase 5 — Web UI MVP)
 
-1. Scaffold `webui/` with React + Vite + TypeScript.
-2. Build connections page (create/connect/disconnect sessions).
-3. Build live log stream page (virtualized table, WebSocket consumer).
-4. Add message detail drawer (full field inspection).
-5. Add filter bar (ecu/apid/ctid/level text search).
-6. Show real-time stats panel (recv rate, decode errors, client lag).
+1. Validate the frontend against a live ECU feed and tune reconnect UX.
+2. Add session persistence and saved presets if Phase 5 needs a stronger operator workflow.
+3. Add richer table affordances: sticky columns, copy actions, and payload truncation controls.
+4. Add end-to-end browser tests for session flow and stream rendering.
 
 ## Notes
 
