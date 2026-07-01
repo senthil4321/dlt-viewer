@@ -578,8 +578,7 @@
                     ecu_id: document.getElementById('ecuId').value,
                 });
                 await refreshSessions();
-                currentSessionId = session.session_id;
-                renderSessions();
+                selectSession(session.session_id);
             } catch (e) {
                 showError(e.message);
             } finally {
@@ -631,6 +630,7 @@
             try {
                 await apiCall(`/sessions/${sessionId}/connect`, 'POST');
                 await refreshSessions();
+                selectSession(sessionId);
             } catch (e) {
                 showError(e.message);
             }
