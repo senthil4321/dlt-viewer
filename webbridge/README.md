@@ -7,16 +7,19 @@ Bridges TCP and UDP ECU connections to live WebSocket event streams.
 
 ### REST API
 
-| Method | Path | Description |
-|--------|------|-------------|
-| GET    | `/health`                           | Liveness check |
-| GET    | `/version`                          | Service version |
-| POST   | `/sessions`                         | Create a new ECU session |
-| GET    | `/sessions`                         | List all sessions |
-| GET    | `/sessions/{id}`                    | Get session details |
-| POST   | `/sessions/{id}/connect`            | Start TCP/UDP ingestion |
-| POST   | `/sessions/{id}/disconnect`         | Stop ingestion |
-| WS     | `/stream/{id}`                      | Live event stream |
+| Method | Path                                          | Description                                             |
+|--------|-----------------------------------------------|----------------------------------------------------------|
+| GET    | `/health`                                     | Liveness check                                          |
+| GET    | `/version`                                    | Service version                                         |
+| POST   | `/sessions`                                   | Create a new ECU session                                |
+| GET    | `/sessions`                                   | List all sessions                                       |
+| GET    | `/sessions/{id}`                              | Get session details                                     |
+| POST   | `/sessions/{id}/connect`                      | Start TCP/UDP ingestion                                 |
+| POST   | `/sessions/{id}/disconnect`                   | Stop ingestion                                          |
+| POST   | `/sessions/{id}/control/set-log-level`        | Send SET_LOG_LEVEL control message (TCP only)           |
+| POST   | `/sessions/{id}/control/set-verbose-mode`     | Send SET_VERBOSE_MODE control message (TCP only)        |
+| GET    | `/sessions/{id}/control/supported-operations` | List control ops supported for the session's transport  |
+| WS     | `/stream/{id}`                                | Live event stream                                       |
 
 ### WebSocket event types
 
@@ -90,7 +93,7 @@ curl -X POST http://127.0.0.1:8008/sessions/<SESSION_ID>/disconnect
 python -m pytest tests/ -v
 ```
 
-All 41 tests pass (parser unit tests, REST API tests, WebSocket tests).
+All 50 tests pass (parser unit tests, REST API tests, WebSocket tests, control operation tests).
 
 ## Test ECU simulator
 
@@ -104,8 +107,8 @@ This will send 100 synthetic DLT messages to the given host:port every 0.5 secon
 
 Use this to end-to-end test the full stack:
 1. Start the bridge: `uvicorn app.main:app --host 127.0.0.1 --port 8008 --reload`
-2. Create a session via REST: `POST /sessions` with `transport=tcp, host=127.0.0.1, port=3490, ecu_id=ECU1`
-3. Start the frontend: `npm run dev` in `../webui`
+2. Open <http://127.0.0.1:8008> in your browser (the UI is served by the same process)
+3. Create a session via the UI (or REST: `POST /sessions` with `transport=tcp, host=127.0.0.1, port=3490, ecu_id=ECU1`)
 4. In the web UI, select the session and click **Connect**
 5. Run the simulator: `python test_ecu_simulator.py --host 127.0.0.1 --port 3490`
 6. Watch messages appear in the live stream table
@@ -113,6 +116,8 @@ Use this to end-to-end test the full stack:
 ## Web UI MVP (Phase 5)
 
 The web UI is embedded directly in the backend as vanilla HTML5 + JavaScript (no build step required).
+An earlier React + Vite prototype was replaced with this vanilla implementation to drop the npm
+dependency; see `static/index.html`.
 
 **Features:**
 - **Connections page**: create sessions, select transport/host/port/ECU, connect/disconnect
@@ -121,6 +126,18 @@ The web UI is embedded directly in the backend as vanilla HTML5 + JavaScript (no
 - **Stats panel**: receive rate, traffic bytes, decode errors, client lag
 - **Message drawer**: full field inspection with copyable values
 - **WebSocket auto-reconnect**: 1.5 s backoff on disconnect
+
+## Control operations (Phase 6)
+
+The message drawer includes a control panel (shown only for connected TCP sessions) for sending
+DLT control messages to the ECU:
+
+- **Set log level**: sends `SET_LOG_LEVEL` for the selected message's APID/CTID
+- **Set verbose mode**: sends `SET_VERBOSE_MODE` for the selected message's APID/CTID
+- **Supported operations**: queried per-session so UDP sessions correctly show no control options
+
+Control messages are send-only — there is no response parsing/acknowledgment yet. See
+[`PHASE6_SUMMARY.md`](PHASE6_SUMMARY.md) for the wire format, endpoint contracts, and test coverage.
 
 ### Run the full stack
 
@@ -142,11 +159,11 @@ The UI is served as static HTML+CSS+JavaScript from the FastAPI backend, making 
 - **Faster**: no JavaScript framework overhead
 - **Offline-capable**: UI works without external CDNs
 
-## Next implementation slice
+## Roadmap
 
-- **Phase 5**: Web UI MVP (React + Vite) — connections page, live log table,
-  message detail drawer, filter bar.
-- **Phase 6**: Control operations (set log level, get log info) and server-side
-  filter pipeline.
-- **Phase 7**: Auth, TLS guidance, Prometheus metrics endpoint.
+- ✅ **Phase 5**: Web UI MVP — connections page, live log table, message detail drawer, filter bar.
+- ✅ **Phase 6**: Control operations (set log level, set verbose mode, supported-operations query).
+- **Phase 7** (next): Response handling for `GET_LOG_INFO`/`GET_SOFTWARE_VERSION`, control message
+  history in the UI, auth, TLS guidance, Prometheus metrics endpoint. See
+  [`PHASE6_SUMMARY.md`](PHASE6_SUMMARY.md#limitations--future-work) for the full list.
 
