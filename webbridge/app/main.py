@@ -234,11 +234,7 @@ async def set_verbose_mode(session_id: str, request: SetVerboseModeRequest) -> C
             detail=f"Cannot send control message: session is {session.state}, not connected"
         )
     
-    control_msg = build_set_verbose_mode_request(
-        apid=request.apid,
-        ctid=request.ctid,
-        verbose=request.verbose,
-    )
+    control_msg = build_set_verbose_mode_request(verbose=request.verbose)
     
     worker = ingestion_manager._workers.get(session_id)
     if not isinstance(worker, TcpIngestionClient):

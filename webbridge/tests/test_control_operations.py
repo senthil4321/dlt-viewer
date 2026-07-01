@@ -45,17 +45,8 @@ class TestControlMessageBuilding:
 
     def test_build_set_verbose_mode_request(self):
         """Test building a SET_VERBOSE_MODE control message."""
-        msg_enable = build_set_verbose_mode_request(
-            apid="APP1",
-            ctid="CTX1",
-            verbose=True,
-        )
-        
-        msg_disable = build_set_verbose_mode_request(
-            apid="APP1",
-            ctid="CTX1",
-            verbose=False,
-        )
+        msg_enable = build_set_verbose_mode_request(verbose=True)
+        msg_disable = build_set_verbose_mode_request(verbose=False)
         
         assert msg_enable is not None
         assert msg_disable is not None
